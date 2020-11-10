@@ -14,7 +14,10 @@ The features that offers the application are :
 ->The possibility to change the base of the map by switching from OSM to satellite
 
 ->Provide a beautiful table for viewing the lamp informations
+
 ->Provide a geolocation for the user and filter data by showing the nearest lamps 
+
 ->Provide a capacity to add a maintenance 
+
 ->By using a chart, the application shows the last four maintenances of a lamp
 
