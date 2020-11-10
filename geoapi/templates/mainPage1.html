@@ -21,7 +21,6 @@
         <a class="control zoom" id="zoomout"><i class="fas fa-minus"></i></a><span id="zoomoutspan">Zoom -</span>
         <a class="control zoom" id="zome-extends"><i class="fas fa-home"></i></a><span id="extendsspan">Centrer</span>
         <a class="control location" id="location"><i class="fas fa-map-marker-alt"></i></a><span id="locationspan">Me localiser</span>
-        <a class="control" id="ruler"><i class="fas fa-ruler"></i></a><span id="rulerspan">Mesurer</span>
         <a class="fond active" id="OSM">OSM</a>
         <a class="fond" id="satellite">Satellite</a>
         <p id="position-mouse"><a class="lat"></p>
@@ -76,24 +75,6 @@
                     <th>Station</th>
                     <th>Distance</th>
                 </tr>
-                <tr class="data clicked">
-                    <td>1</td>
-                    <td>LTY5</td>
-                    <td>Station4</td>
-                    <td>50 m</td>
-                </tr>
-                <tr class="data">
-                    <td>2</td>
-                    <td>LTY7</td>
-                    <td>Station2</td>
-                    <td>500 m</td>
-                </tr>
-                <tr class="data">
-                    <td>3</td>
-                    <td>LTY3</td>
-                    <td>Station1</td>
-                    <td>900 m</td>
-                </tr>
             </table>
         </div>
         <div id="information-container">
@@ -131,6 +112,9 @@
                     <button id="cancel">Annuler</button>
                 </div>
             </form>
+        </div>
+        <div id="test">
+            <canvas id="testchart" width="400" height="200">></canvas>
         </div>
     </div>
     <script type="text/javascript" src="{% static 'js/mainJs.js'  %}"></script>

@@ -74,8 +74,8 @@ for (let baseMap of baseMaps){
         if (!baseMap.getAttribute('class').includes('active')){
             RemoveAttributeActive() 
             baseMap.setAttribute('class', 'fond active')
-            let mapTileID = baseMap.getAttribute('id')
-            switch(mapTileID){
+            let mapTile = baseMap.getAttribute('id')
+            switch(mapTile){
                 case 'OSM':
                     map.removeLayer(satelliteTile)
                     map.addLayer(OSMTile)
@@ -98,8 +98,6 @@ function RemoveAttributeActive(){
         }
     }
 }
-let dataLamps = []
-let selectionedElement =  {}
 let highlightStyle = new ol.style.Style({
     image: new ol.style.Circle({
         radius: 5,
@@ -112,26 +110,31 @@ let highlightStyle = new ol.style.Style({
     })
     })
 });
+let selectionedElement =  {}
+let ft = null
 map.on('click', function(e) {
     let pixels = e.pixel
-    let features = lampsSource.getFeatures()
-    for (let feature of features){ 
-        feature.setStyle(flickrStyle)
-    }
     map.forEachFeatureAtPixel(pixels, function(f,layer){
         if (layer.className_ !== 'geoloc'){ // we dont want to style the geoloc feature
-            f.setStyle(highlightStyle)
-            console.log(layer, f)
-            let id = f.getId() 
-            if (!selectionedElement || selectionedElement.id !== id){ // we dont need that a user click the same obj repetly
+            byId('base').style.display = 'block'
+            let id = f.getId()
+            if (ft !== null){ 
+                ft.setStyle(flickrStyle)
+            }
+            if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
+                ft = f
+                ft.setStyle(highlightStyle)
                 selectionedElement.id = id
-                selectionedElement.name = f.get('name')
-                selectionedElement.station = f.get('station')
+                selectionedElement.name = ft.get('name')
+                selectionedElement.station = ft.get('station')
                 fetchlamps()
+            }else{ 
+                ft.setStyle(highlightStyle)
             }
         }
     })
 })
+let dataLamps = []
 function fetchlamps(){ 
     fetch(`lamphistorique/${selectionedElement.id}`)
     .then(function(res){ 
@@ -139,7 +142,7 @@ function fetchlamps(){
     })
     .then(function(data){  
         dataLamps = data
-        CreateLampTable(data[0]) // As our data are ordered by datetime we want the show up the recent data
+        CreateLampTable(data[0]) // As our data are ordered by datetime we want to show up the recent data
         CreateLampGraphic()
     })
 }
@@ -215,27 +218,30 @@ function AddZero(element){
     }
     return element
 }
-let ShowBy = ''
+let ShowBy = byId('selected')
+
 function CreateLampGraphic(){ 
+    let data = []
+    let labels = []
     let elements = dataLamps
-    let datesLabel = [], data = []
-    elements.forEach(element => {
-        datesLabel.push(new Date(element.created_At).toLocaleDateString())
-        if (!ShowBy || ShowBy === 'number_off_lamp_On' ){ 
-            data.push(element.number_off_lamp_On)
-        }else{    
+    for (let element of elements){ 
+        labels.push(new Date(element.created_At).toLocaleDateString())
+        if (ShowBy === 'number_off_lamp_On'){ 
             data.push(element.number_off_lamp_Off)
         }
-    });
-    let ctx = byId('myChart').getContext('2d');
-    let chart = new Chart(ctx, {
+        data.push(element.number_off_lamp_On)
+    }
+    byId('myChart').remove() // will remove the others chart instances
+    let chartCanvas = document.createElement('canvas')
+    chartCanvas.setAttribute('id','myChart')
+    byId('chart').append(chartCanvas)
+    let chart = new Chart(chartCanvas,{
         type: 'line',
             data: {
-            labels: datesLabel,
+            labels: labels,
             datasets: [{
-                label: 'Evolution',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
+                label: ShowBy.value === 'number_off_lamp_Off' ? 'Eteint': 'Allumer',
+                borderColor: ShowBy.value === 'number_off_lamp_Off' ? '#D21F0D': 'blue',
                 data: data
             }]
         },
@@ -246,14 +252,12 @@ function CreateLampGraphic(){
                             beginAtZero: true
                         }
                     }]
-                }
+                },
             }
     });
 }
 
-let changeGraphic = byId('selected')
-changeGraphic.addEventListener('change',function(){ 
-     ShowBy = this.value
+ShowBy.addEventListener('change',function(){ 
      CreateLampGraphic()
 })
 
@@ -312,6 +316,7 @@ activeGeolocation.addEventListener('click',function(){
                 positions = geolocation.getPosition()
                 createPositionFeature()
                 showNearestLamps()  
+                byId('nearest-lamps').style.display = 'block'
         }else{ 
             let distance = ol.sphere.getDistance(positions,geolocation.getPosition())
             if (distance > 2){ 
@@ -327,7 +332,7 @@ function showNearestLamps() {
         .then(function(res){ 
             return res.json()
         }).then(function(data){ 
-            console.log(JSON.parse(data))
+            nearestLampTable(JSON.parse(data))
         })
   }
 
@@ -358,35 +363,78 @@ function showNearestLamps() {
     map.getView().setCenter(positions)
     map.getView().setZoom(16)  
   }
-
+  let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
   function nearestLampTable(elements){ 
       if (!elements){ 
-          throw Error('The elements must not be empy')
+          throw Error('The elements must not be empty')
       }
+      let i = 0
+      for (i; i < elements.length; i++){ 
+        let newRow = document.createElement('tr')
+        let distance = ConvertDistance(elements[i].distance)
+        tableBody.innerHTML += `<tr class="data" id=${elements[i].id} onclick="ShowFeature(this)">
+                                    <td>${i}</td>
+                                    <td>${elements[i].name}</td>
+                                    <td>${elements[i].station}</td>
+                                    <td>${distance}</td>
+                                </td>`
+      }
+      /* the first tr element will receive a class attribute data clicked in order to style it differently */
+      tableBody.getElementsByTagName('tr')[1].setAttribute('class', 'data clicked')
+      let ids = []
       for (let element of elements){ 
-
+            ids.push(Number(element.id))
       }
-
+      let features = lampsSource.getFeatures()
+      let filtereFeatures = filterFeatures(features,ids)
+      lampsSource.clear()
+      lampsSource.addFeatures(filtereFeatures)
   }
-// Creating a default chart when the page load
+  function filterFeatures(elements,objs){ 
+    let output = []
+    for (let feature of elements){ 
+        if (objs.find(obj => obj === feature.id_)){ 
+            output.push(feature)
+        }
+    }
+    return output
+  }
+  
 
-    /*
-        fetch(`lamphistorique/${id}`)
-            .then(res => res.json())
-                .then(data => console.log(data))
-    })
-  });
-/*document.getElementById("activeGe").addEventListener('click', function(){ 
-        navigator.geolocation.getCurrentPosition(showPosition)
-})
+function ShowFeature(element){ 
+    let lampTrs = tableBody.querySelectorAll('tr.data')
+    let id = Number(element.getAttribute('id'))
+    let idClicked = byClass('data clicked')[0].getAttribute('id')
+    if (id !== Number(idClicked)){ 
+        for (let lampTr of lampTrs){ 
+            lampTr.setAttribute('class', 'data')
+        }
+        element.setAttribute('class', 'data clicked') // we will give the tr element that receive the click another class attri
+        let features = lampsSource.getFeatures()
+        let featureToShow = features.find(feature => feature.id_ === id)
+        selectionedElement.id = featureToShow.getId()
+        selectionedElement.name = featureToShow.get('name')
+        selectionedElement.station = featureToShow.get('station')
+        for (let feature of features){ 
+            feature.setStyle(flickrStyle)
+        }
+        featureToShow.setStyle(highlightStyle)
+        fetchlamps()
+    }
+}
 
-
- /* let check = document.getElementById("visibleObj")
-  check.addEventListener('change', function(){ 
-      let isVisble = this.checked
-      lamps.setVisible(isVisble)
-  })*/
-
+  function ConvertDistance(dist){ 
+    let output = 0
+    if (!dist || typeof(dist) !== 'number'){ 
+            throw new Error('Need a valid distance')
+    }
+    if (dist > 1000){ 
+        output = (dist / 1000).toFixed(2) + ' ' + 'km'
+    }else{
+        output = (dist).toFixed(2) +  ' ' + 'm'
+    }
+    return output 
+  }
  
   function getCookie(name) {
     let cookieValue = null;
@@ -412,41 +460,41 @@ for (let control of controls){
 }
 
 let coordsCenter = ol.proj.transform([43.105059, 11.596976], 'EPSG:4326', 'EPSG:3857')
-let zooms = document.getElementsByClassName('zoom')
+let zooms = byClass('zoom')
+let spanZoomOut = byId('zoomoutspan')
+let spanZoomIn = byId('zoominspan')
 for (let zoom of zooms){ 
     zoom.addEventListener('click',function(){ 
         let id = zoom.getAttribute('id')
         let zoomValue = map.getView().getZoom()
         if (id === "zoomin"){ 
-            let span = document.getElementById('zoominspan')
-            span.style.display = 'none'
+            spanZoomIn.style.display = 'none'
             map.getView().setZoom(zoomValue + 1)
         }else if (id === "zoomout"){
+            spanZoomOut.style.display = 'none'
             map.getView().setZoom(zoomValue - 1)
         }else{ 
-            // we will re-centre the map by using 12 as zdefautl zoom level
-            map.getView().setZoom(defaultZoom)
-            map.getView().setCenter(coordsCenter)
+            map.getView().animate({center: coordsCenter},{zoom: defaultZoom},{duration: 2000})
         }
             
     })
 }
 
-let span = document.getElementById('zoominspan')
-let zoomin = document.getElementById('zoomin')
+let zoomin = byId('zoomin')
+let zoomOut = byId('zoomout')
 zoomin.addEventListener('mouseenter', function(){ 
-    setTimeout(function(){  
-    span.style.position = 'absolute'
-    span.style.top = '110px'
-    span.style.left = '50px'
-    span.style.display = 'block'
-    }, 500);
+    spanZoomIn.style.display = 'block'
 })
-document.getElementById('zoomin').addEventListener('mouseleave', function(){ 
-    setTimeout(function(){  
-        span.style.display = 'none'
-        }, 700);
+zoomin.addEventListener('mouseleave', function(){ 
+    spanZoomIn.style.display = 'none'        
 })
+zoomOut.addEventListener('mouseenter', function(){ 
+    spanZoomOut.style.display = 'block'
+})
+zoomOut.addEventListener('mouseleave', function(){ 
+    spanZoomOut.style.display = 'none'        
+})
+
 map.on('pointermove', function(e){ 
     let coords = ol.proj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326')
     let formatCoord = ol.coordinate.createStringXY(3)
@@ -458,13 +506,16 @@ let closeDivs = document.getElementsByClassName('close-information')
 for (let closeDiv of closeDivs){ 
     closeDiv.addEventListener('click', function(){ 
         let parentDiv = this.parentElement.parentElement
-        if (parentDiv.getAttribute('id') === "form-data"){ 
+        if (parentDiv.getAttribute('id') === 'form-data'){ 
             parentDiv = parentDiv.parentElement
             parentDiv.style.display = 'none'
-        }
+        }else if (parentDiv.getAttribute('id') === 'nearest-lamps'){ 
             parentDiv.style.display = 'none'
+            lampsSource.refresh()
+        }
+        parentDiv.style.display = 'none'       
     })
 }
-
+ 
 
 

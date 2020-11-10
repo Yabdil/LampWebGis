@@ -59,7 +59,7 @@ img{
     position: absolute;
     top: 190px;
     right: 5px;
-    width: 350px;
+    width: 330px;
     border-radius: 0px 0px 4px 4px;
 }
 
@@ -417,12 +417,12 @@ h3{
     padding: 6px 10px;
 }
 
-#ruler{ 
+/*#ruler{ 
     position: absolute;
     top: 240px;
     left: 10px;
     padding: 6.5px 7px;
-}
+}*/
 .activated{
     color:#2475B3;
     background-color: #DCD7D7;
@@ -435,12 +435,20 @@ span{
     padding: 3px 5px;
     border-radius: 6px;
     display: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #zoomoutspan{ 
     position: absolute;
     top: 135px;
     left: 45px;
+}
+#zoominspan{ 
+    position: absolute;
+    top: 105px;
+    left: 45px
 }
 
 #extendsspan{ 
@@ -455,11 +463,11 @@ span{
     left: 45px;
 }
 
-#rulerspan{ 
+/*#rulerspan{ 
     position: absolute;
     top: 240px;
     left: 45px;
-}
+}*/
 
 #zoomout:hover + #zoomoutspan, #zome-extends:hover + #extendsspan, #location:hover + #locationspan, #ruler:hover + #rulerspan{ 
     display: block;
@@ -538,17 +546,17 @@ h2{
     background-color: #F9F8F4;
     border-radius: 3px 3px 0px 0px;
     font-size: 12px;
+    padding-right: 4px;
 }
 
 #Ol-OSM a{ 
     text-decoration: none;
     padding: 50px 2px;
-    color: #574D4D;
+    color: #03899c;
 }
 
 #Ol-OSM a:hover{ 
     color:  #1B9E0D;
-    text-decoration: underline;
 }
 
 

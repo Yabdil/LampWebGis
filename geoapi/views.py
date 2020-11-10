@@ -21,6 +21,8 @@ class LampView(APIView):
 class LampDetailsHistorique(APIView):
     def get(self, request, pk):
         queryset = Lamp_historique.objects.filter(lamp__id=pk).order_by('-created_At')
+        if len(queryset) > 4:
+            queryset = queryset[0:4]
         serializer = Lamp_historiqueSerializer(queryset, many=True)
         return Response(serializer.data, status=200)
 
@@ -41,10 +43,10 @@ class NerestLamp(APIView):
         lat = request.query_params.get('lat')
         long = request.query_params.get('long')
         pnt = Point(float(long), float(lat), srid=4326)
-        querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id', 'distance')[0:3]
+        querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id','name','station','distance')[0:3]
         data = []
         for queryset in querysets:
-            data.append({"id":queryset['id'],'distance':transformDistanceValueToInt(queryset['distance'])})
+            data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToInt(queryset['distance'])})
         return Response(json.dumps(data), status=200)
 
 def transformDistanceValueToInt(value):
