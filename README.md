@@ -6,6 +6,7 @@ Backend: Django and Rest Framework
 Frontend: VanillaJS, Openlayers for the map and ChartJs for the chart
 
 The features that offers the application are : 
+
 ->Geolocate the lamps of the port and put them at a map
 ->An intuitive interface 
 ->The possibility to change the base of the map by switching from OSM to satellite
