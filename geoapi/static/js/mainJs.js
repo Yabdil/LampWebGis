@@ -386,9 +386,9 @@ function showNearestLamps() {
             ids.push(Number(element.id))
       }
       let features = lampsSource.getFeatures()
-      let filtereFeatures = filterFeatures(features,ids)
+      let filteredFeatures = filterFeatures(features,ids)
       lampsSource.clear()
-      lampsSource.addFeatures(filtereFeatures)
+      lampsSource.addFeatures(filteredFeatures)
   }
   function filterFeatures(elements,objs){ 
     let output = []
