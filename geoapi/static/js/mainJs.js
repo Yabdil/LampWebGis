@@ -516,6 +516,6 @@ for (let closeDiv of closeDivs){
         parentDiv.style.display = 'none'       
     })
 }
- 
+console.log('added') 
 
 
