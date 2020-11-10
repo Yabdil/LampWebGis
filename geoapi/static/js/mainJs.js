@@ -21,24 +21,41 @@ let lampsSource = new ol.source.Vector({
     url : 'getGeojson',
     format: new ol.format.GeoJSON(),
 })
-function flickrStyle(feature) {
-    let style = new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: 5,
-        stroke: new ol.style.Stroke({
-            color: 'white',
-            width: 2
-        }),
-        fill: new ol.style.Fill({
-            color: 'green'
-        })
-        })
-    });
+function LampStyle(feature,resolution) {
+    let diff = feature.get('diff')
+    let style = new ol.style.Style()
+    if (diff < 0){ 
+        style.setImage(
+            new ol.style.Circle({
+                radius: 5,
+                stroke: new ol.style.Stroke({
+                    color: 'white',
+                    width: 2
+                }),
+                fill: new ol.style.Fill({
+                    color: 'red'
+                })
+            })
+        )
+    }else{ 
+        style.setImage(
+            new ol.style.Circle({
+                radius: 5,
+                stroke: new ol.style.Stroke({
+                    color: 'white',
+                    width: 2
+                }),
+                fill: new ol.style.Fill({
+                    color: 'green'
+                })
+            })
+        )
+    }
     return style;
 }
 let lampsVector = new ol.layer.Vector({ 
     source: lampsSource,
-    style: flickrStyle
+    style: LampStyle
 })
 
 let defaultZoom = 13
@@ -98,7 +115,7 @@ function RemoveAttributeActive(){
         }
     }
 }
-let highlightStyle = new ol.style.Style({
+let StyleElement = new ol.style.Style({
     image: new ol.style.Circle({
         radius: 5,
     stroke: new ol.style.Stroke({
@@ -106,7 +123,7 @@ let highlightStyle = new ol.style.Style({
         width: 2
     }),
     fill: new ol.style.Fill({
-        color: 'red'
+        color: '#8B2318'
     })
     })
 });
@@ -119,17 +136,17 @@ map.on('click', function(e) {
             byId('base').style.display = 'block'
             let id = f.getId()
             if (ft !== null){ 
-                ft.setStyle(flickrStyle)
+                ft.setStyle(LampStyle)
             }
             if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
                 ft = f
-                ft.setStyle(highlightStyle)
+                ft.setStyle(StyleElement)
                 selectionedElement.id = id
                 selectionedElement.name = ft.get('name')
                 selectionedElement.station = ft.get('station')
                 fetchlamps()
             }else{ 
-                ft.setStyle(highlightStyle)
+                ft.setStyle(StyleElement)
             }
         }
     })
@@ -240,7 +257,7 @@ function CreateLampGraphic(){
             data: {
             labels: labels,
             datasets: [{
-                label: ShowBy.value === 'number_off_lamp_Off' ? 'Eteint': 'Allumer',
+                label: ShowBy.value === 'number_off_lamp_Off' ? 'Eteint': 'Allumé',
                 borderColor: ShowBy.value === 'number_off_lamp_Off' ? '#D21F0D': 'blue',
                 data: data
             }]
@@ -309,22 +326,29 @@ let geolocation = new ol.Geolocation({
 let activeGeolocation = byId('location')
 let positions = null
 let positionFeature = new ol.Feature();
+let vectorPosition = new ol.layer.Vector()
+let tableNearest = byId('nearest-lamps')
 activeGeolocation.addEventListener('click',function(){ 
-    geolocation.setTracking(true)
-    geolocation.on('change:position',function(){ 
-        if (!positions){ 
-                positions = geolocation.getPosition()
-                createPositionFeature()
-                showNearestLamps()  
-                byId('nearest-lamps').style.display = 'block'
-        }else{ 
-            let distance = ol.sphere.getDistance(positions,geolocation.getPosition())
-            if (distance > 2){ 
-                    positions = geolocation.getPosition()
-                    createPositionFeature()             
-            }
-        }
+    if (!activeGeolocation.getAttribute('class').includes('actual')){
+        geolocation.setTracking(true)
+        geolocation.on('change:position', function(evt){ 
+        geolocation.setTracking(false) // we will diseable the tracking 
+        activeGeolocation.setAttribute('class', 'control location actual')
+       let accuracy = geolocation.getAccuracy()
+       if (accuracy < 3000){ 
+            positions = geolocation.getPosition()
+            createPositionFeature()
+            showNearestLamps()  
+        }else{  // case where the accuracy is low, we will just center the map, but not show the marker
+            positions = geolocation.getPosition()
+            showNearestLamps()
+            map.getView().setCenter(positions)
+            map.getView().setZoom(15)
+        }  
     })
+  }else{ 
+      map.getView().setCenter(positions)
+  }
 })
 function showNearestLamps() {
    let [long, lat]= ol.proj.transform(positions,'EPSG:3857','EPSG:4326')
@@ -332,8 +356,9 @@ function showNearestLamps() {
         .then(function(res){ 
             return res.json()
         }).then(function(data){ 
+            console.log(data)
             nearestLampTable(JSON.parse(data))
-        })
+         })
   }
 
   function createPositionFeature(){ 
@@ -352,25 +377,27 @@ function showNearestLamps() {
       })
     );
     positionFeature.setGeometry(new ol.geom.Point(positions))
-    let vectorPosition = new ol.layer.Vector({
-        source: new ol.source.Vector({ 
-            format: new ol.format.GeoJSON(),
-            features: [positionFeature]
-        }),
-        className: 'geoloc'
+    let sourceFeaturePosition = new ol.source.Vector({ 
+        format: new ol.format.GeoJSON(),
+        features: [positionFeature]
     })
+    vectorPosition.setSource(sourceFeaturePosition)
+    vectorPosition.set('className','geoloc')
     map.addLayer(vectorPosition)
     map.getView().setCenter(positions)
     map.getView().setZoom(16)  
   }
   let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
   function nearestLampTable(elements){ 
-      if (!elements){ 
-          throw Error('The elements must not be empty')
-      }
+      /*if (tableBody.getElementsByClassName('data').length > 2){ // we will remove previous data 
+        let tableElements = tableBody.getElementsByClassName('data')
+        console.log(tableElements)
+        for (let tableElement of tableElements){ 
+            tableBody.remove(tableElement)
+        }
+      }*/
       let i = 0
       for (i; i < elements.length; i++){ 
-        let newRow = document.createElement('tr')
         let distance = ConvertDistance(elements[i].distance)
         tableBody.innerHTML += `<tr class="data" id=${elements[i].id} onclick="ShowFeature(this)">
                                     <td>${i}</td>
@@ -381,6 +408,7 @@ function showNearestLamps() {
       }
       /* the first tr element will receive a class attribute data clicked in order to style it differently */
       tableBody.getElementsByTagName('tr')[1].setAttribute('class', 'data clicked')
+      tableNearest.style.display = 'block'
       let ids = []
       for (let element of elements){ 
             ids.push(Number(element.id))
@@ -402,6 +430,7 @@ function showNearestLamps() {
   
 
 function ShowFeature(element){ 
+    byId('base').style.display = 'block'
     let lampTrs = tableBody.querySelectorAll('tr.data')
     let id = Number(element.getAttribute('id'))
     let idClicked = byClass('data clicked')[0].getAttribute('id')
@@ -416,9 +445,9 @@ function ShowFeature(element){
         selectionedElement.name = featureToShow.get('name')
         selectionedElement.station = featureToShow.get('station')
         for (let feature of features){ 
-            feature.setStyle(flickrStyle)
+            feature.setStyle(LampStyle)
         }
-        featureToShow.setStyle(highlightStyle)
+        featureToShow.setStyle(StyleElement)
         fetchlamps()
     }
 }
@@ -436,7 +465,7 @@ function ShowFeature(element){
     return output 
   }
  
-  function getCookie(name) {
+  function getCookie(name) { // Source of this function : the django documentation
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -497,7 +526,7 @@ zoomOut.addEventListener('mouseleave', function(){
 
 map.on('pointermove', function(e){ 
     let coords = ol.proj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326')
-    let formatCoord = ol.coordinate.createStringXY(3)
+    let formatCoord = ol.coordinate.createStringXY(4)
     let XYcoords = formatCoord(coords).split(',')
     document.getElementById('position-mouse').textContent = XYcoords
 })
@@ -510,12 +539,22 @@ for (let closeDiv of closeDivs){
             parentDiv = parentDiv.parentElement
             parentDiv.style.display = 'none'
         }else if (parentDiv.getAttribute('id') === 'nearest-lamps'){ 
+            //activeGeolocation.setAttribute('class', 'control location')
+            //ClearTable()
             parentDiv.style.display = 'none'
+            map.removeLayer(vectorPosition)
             lampsSource.refresh()
         }
         parentDiv.style.display = 'none'       
     })
 }
-console.log('added') 
+
+function ClearTable(){ 
+    let datas = document.querySelectorAll('tr.data')
+    for (let data of datas){ 
+        let parent = data.parentElement
+        parent.removeChild(data)
+    }
+}
 
 

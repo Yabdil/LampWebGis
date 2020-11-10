@@ -3,8 +3,8 @@ from .models import Lamp, Lamp_historique
 from rest_framework import serializers
 
 class LampSerializer(GeoFeatureModelSerializer):
-    LampDiff = serializers.SerializerMethodField()
-    def get_LampDiff(self,obj):
+    diff = serializers.SerializerMethodField()
+    def get_diff(self,obj):
         LampDiff = 0
         if Lamp_historique.objects.filter(lamp=obj).exists():
             lamp = Lamp_historique.objects.filter(lamp=obj).order_by('-created_At').first()

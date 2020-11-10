@@ -46,10 +46,10 @@ class NerestLamp(APIView):
         querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id','name','station','distance')[0:3]
         data = []
         for queryset in querysets:
-            data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToInt(queryset['distance'])})
+            data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToFloat(queryset['distance'])})
         return Response(json.dumps(data), status=200)
 
-def transformDistanceValueToInt(value):
+def transformDistanceValueToFloat(value):
     distance = str(value)
     return float(distance.split(' ')[0]) # we dont need the m meter 
 
