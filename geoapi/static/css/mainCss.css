@@ -417,6 +417,9 @@ h3{
     padding: 6px 10px;
 }
 
+.actual{ 
+    color:#2475B3
+}
 /*#ruler{ 
     position: absolute;
     top: 240px;
