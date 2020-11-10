@@ -8,8 +8,11 @@ Frontend: VanillaJS, Openlayers for the map and ChartJs for the chart
 The features that offers the application are : 
 
 ->Geolocate the lamps of the port and put them at a map
+
 ->An intuitive interface 
+
 ->The possibility to change the base of the map by switching from OSM to satellite
+
 ->Provide a beautiful table for viewing the lamp informations
 ->Provide a geolocation for the user and filter data by showing the nearest lamps 
 ->Provide a capacity to add a maintenance 
