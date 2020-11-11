@@ -243,10 +243,10 @@ function CreateLampGraphic(){
     let elements = dataLamps
     for (let element of elements){ 
         labels.push(new Date(element.created_At).toLocaleDateString())
-        if (ShowBy === 'number_off_lamp_On'){ 
-            data.push(element.number_off_lamp_Off)
+        if (ShowBy.value === 'number_off_lamp_On'){ 
+            data.push(element.number_off_lamp_On)
         }
-        data.push(element.number_off_lamp_On)
+        data.push(element.number_off_lamp_Off)
     }
     byId('myChart').remove() // will remove the others chart instances
     let chartCanvas = document.createElement('canvas')
@@ -279,47 +279,65 @@ ShowBy.addEventListener('change',function(){
 })
 
 let showModal = byClass('fa-edit')[0]
-let divModal= document.getElementById('information-container')
 let closeModal = byId('cancel')
+let divModal= document.getElementById('information-container')
 let form = byId('form-data')
+let msgError = byId('msgError')
+let msgSucces = byId('msgConfirmation')
 showModal.addEventListener('click', function(){ 
     divModal.style.display = 'block'
     byId('name').value = selectionedElement.name
-    form.addEventListener('submit', SubmitForm)
+    form.addEventListener('submit', SubmitForm) // the form is under the divModal
 })
 function SubmitForm(e){ 
     e.preventDefault()
     let number_off = Number(byId('numberOff').value)
     let number_on = Number(byId('numberOn').value)
     let comment = byId('comment').value
-    let total = number_off + number_on
-    let newLampHistoric = { 
-        number_off_lamp_Off: number_off,
-        number_off_lamp_On: number_on,
-        total: total,
-        comment: comment,
-        lamp: selectionedElement.id,
-        hasWifi: byId('wifi').checked,
-        hasCamera: byId('Camera').checked,
+    if (!number_off || !number_on){ 
+        msgError.innerHTML = 'Vous devez saisir au moins une valeur'
+        msgError.style.display = 'block'
+        console.log('stop')
+    }else{ 
+        let total = number_off + number_on
+        let newLampHistoric = { 
+            number_off_lamp_Off: number_off,
+            number_off_lamp_On: number_on,
+            total: total,
+            comment: comment,
+            lamp: selectionedElement.id,
+            hasWifi: byId('wifi').checked,
+            hasCamera: byId('Camera').checked,
     }
     let headers = new Headers();
     headers.append('X-CSRFToken', csrftoken)
     headers.append("Content-Type", "application/json")
-    fetch(`lamphistorique/${selectionedElement.id}`,{method:'POST',body: JSON.stringify(newLampHistoric), headers:headers})
+    fetch(`lamphistorique/${selectionedElement.id}`,{method:'POST',body: JSON.stringify(newLampHistoric),headers:headers})
             .then(res => res.json())
                 .then(function(data){ 
-                    CreateLampTable(data)
-                    fetchlamps()
-                    form.reset()
-                    ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
-                    ft.setStyle(LampStyle)
-                    divModal.style.display = 'none'
+                    if (data.non_field_errors){ 
+                        msgError.innerHTML = data.non_field_errors
+                        msgError.style.display = 'block'
+                    }else{
+                        msgSucces.style.display = 'block'
+                        setTimeout(function(){ 
+                            fetchlamps()
+                            form.reset()
+                            ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
+                            divModal.style.display = 'none'
+                            msgSucces.style.display = 'none'
+                        },2000)
+                        
+                    }
                 })
-}
+            }
+        }
 
 closeModal.addEventListener('click', function(e){ 
     e.preventDefault()
+    form.reset()
     divModal.style.display = 'none'
+    msgError.style.display = 'none'
 })
 let geolocation = new ol.Geolocation({ 
     projection: map.getView().getProjection()
@@ -359,7 +377,7 @@ function showNearestLamps() {
          })
   }
 
-  function createPositionFeature(){ 
+function createPositionFeature(){ 
     let positionFeature = new ol.Feature();
     positionFeature.setStyle(
       new ol.style.Style({
@@ -396,7 +414,7 @@ function showNearestLamps() {
                                     <td>${elements[i].name}</td>
                                     <td>${elements[i].station}</td>
                                     <td>${distance}</td>
-                                </td>`
+                                </tr>`
       }
       /* the first tr element will receive a class attribute data clicked in order to style it differently */
       tableBody.getElementsByTagName('tr')[1].setAttribute('class', 'data clicked')
@@ -496,8 +514,7 @@ for (let zoom of zooms){
             map.getView().setZoom(zoomValue - 1)
         }else{ 
             map.getView().animate({center: coordsCenter},{zoom: defaultZoom},{duration: 2000})
-        }
-            
+        }   
     })
 }
 
@@ -529,7 +546,9 @@ for (let closeDiv of closeDivs){
         let parentDiv = this.parentElement.parentElement
         if (parentDiv.getAttribute('id') === 'form-data'){ 
             parentDiv = parentDiv.parentElement
+            form.reset()
             parentDiv.style.display = 'none'
+            msgError.style.display = 'none'
         }else if (parentDiv.getAttribute('id') === 'nearest-lamps'){ 
             ClearTable()
             activeGeolocation.setAttribute('class', 'control location')

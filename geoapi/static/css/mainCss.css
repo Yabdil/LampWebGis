@@ -130,6 +130,7 @@ img{
 #table-information-genrales #title{ 
     border-bottom: 1px solid #2475B3; 
     font-weight: bold;
+    border-top: none;
 }
 
 #table-information-genrales tr:not(#title){ 
@@ -188,8 +189,10 @@ img{
 }
 
 #msgError{ 
-    background-color:  #d84b28;
+    background-color: #CA0C06;
     display: none;
+    color: whitesmoke;
+    padding-left: 15px;
 }
 
 #msgConfirmation{ 
@@ -575,7 +578,7 @@ h2{
 
     }
     .lamps-information{ 
-        margin-right: 0.5px;
+        margin-right: 0.6px;
     }
 
     #base{ 

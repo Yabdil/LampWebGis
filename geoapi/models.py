@@ -21,11 +21,12 @@ class Lamp_historique(models.Model):
     created_At = models.DateTimeField(default=datetime.now, blank=True)
     hasCamera = models.BooleanField(default=False)
     hasWifi = models.BooleanField(default=False)
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
 
     def __str__(self):
-        return self.lamp.name
-        
+        date = self.created_At
+        return f'{self.lamp.name}-{date.strftime("%x")}'
+
     
 
 
