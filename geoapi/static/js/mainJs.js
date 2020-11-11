@@ -300,7 +300,7 @@ function SubmitForm(e){
         comment: comment,
         lamp: selectionedElement.id,
         hasWifi: byId('wifi').checked,
-        hasCamera: byId('Camera').checked
+        hasCamera: byId('Camera').checked,
     }
     let headers = new Headers();
     headers.append('X-CSRFToken', csrftoken)
@@ -311,9 +311,10 @@ function SubmitForm(e){
                     CreateLampTable(data)
                     fetchlamps()
                     form.reset()
+                    ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
+                    ft.setStyle(LampStyle)
                     divModal.style.display = 'none'
                 })
-    
 }
 
 closeModal.addEventListener('click', function(e){ 
@@ -325,7 +326,6 @@ let geolocation = new ol.Geolocation({
 })
 let activeGeolocation = byId('location')
 let positions = null
-let positionFeature = new ol.Feature();
 let vectorPosition = new ol.layer.Vector()
 let tableNearest = byId('nearest-lamps')
 activeGeolocation.addEventListener('click',function(){ 
@@ -333,15 +333,14 @@ activeGeolocation.addEventListener('click',function(){
         geolocation.setTracking(true)
         geolocation.on('change:position', function(evt){ 
         geolocation.setTracking(false) // we will diseable the tracking 
-        activeGeolocation.setAttribute('class', 'control location actual')
        let accuracy = geolocation.getAccuracy()
-       if (accuracy < 3000){ 
+       if (accuracy < 13000){ 
             positions = geolocation.getPosition()
             createPositionFeature()
+            activeGeolocation.setAttribute('class', 'control location actual')
             showNearestLamps()  
         }else{  // case where the accuracy is low, we will just center the map, but not show the marker
             positions = geolocation.getPosition()
-            showNearestLamps()
             map.getView().setCenter(positions)
             map.getView().setZoom(15)
         }  
@@ -356,12 +355,12 @@ function showNearestLamps() {
         .then(function(res){ 
             return res.json()
         }).then(function(data){ 
-            console.log(data)
             nearestLampTable(JSON.parse(data))
          })
   }
 
   function createPositionFeature(){ 
+    let positionFeature = new ol.Feature();
     positionFeature.setStyle(
       new ol.style.Style({
         image: new ol.style.Circle({
@@ -389,13 +388,6 @@ function showNearestLamps() {
   }
   let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
   function nearestLampTable(elements){ 
-      /*if (tableBody.getElementsByClassName('data').length > 2){ // we will remove previous data 
-        let tableElements = tableBody.getElementsByClassName('data')
-        console.log(tableElements)
-        for (let tableElement of tableElements){ 
-            tableBody.remove(tableElement)
-        }
-      }*/
       let i = 0
       for (i; i < elements.length; i++){ 
         let distance = ConvertDistance(elements[i].distance)
@@ -539,8 +531,8 @@ for (let closeDiv of closeDivs){
             parentDiv = parentDiv.parentElement
             parentDiv.style.display = 'none'
         }else if (parentDiv.getAttribute('id') === 'nearest-lamps'){ 
-            //activeGeolocation.setAttribute('class', 'control location')
-            //ClearTable()
+            ClearTable()
+            activeGeolocation.setAttribute('class', 'control location')
             parentDiv.style.display = 'none'
             map.removeLayer(vectorPosition)
             lampsSource.refresh()
