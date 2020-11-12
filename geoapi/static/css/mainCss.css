@@ -505,12 +505,25 @@ h2{
 
 #lamps-table td{
     text-align: left;
-    padding: 3% 2% 3% 2%;
+    padding: 2% 2% 3% 5%;
+    
 }
 
 #lamps-table th{ 
     text-align: left;
-    padding: 3% 2%;
+    padding: 2% 2% 3% 5%;
+}
+
+#lamps-table th:first-child{ 
+    padding-left: 2%;
+}
+
+#lamps-table td:first-child{ 
+    padding-left: 2%;
+}
+
+#lamps-table th:last-child, td:last-child{ 
+    padding-right: 1px;
 }
 
 #lamps-table tr{

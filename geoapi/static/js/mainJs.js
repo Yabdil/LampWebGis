@@ -135,18 +135,43 @@ map.on('click', function(e) {
         if (layer.className_ !== 'geoloc'){ // we dont want to style the geoloc feature
             byId('base').style.display = 'block'
             let id = f.getId()
-            if (ft !== null){ 
-                ft.setStyle(LampStyle)
-            }
-            if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
-                ft = f
-                ft.setStyle(StyleElement)
-                selectionedElement.id = id
-                selectionedElement.name = ft.get('name')
-                selectionedElement.station = ft.get('station')
-                fetchlamps()
+            let objs = byClass('data')
+            if (objs.length > 0){ // we will synchronise the map and the table 
+                if (ft !== null){ 
+                    ft.setStyle(LampStyle)
+                }
+                if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
+                    ft = f
+                    for (let obj of objs){ 
+                        obj.setAttribute('class','data')
+                    }
+                    for (let obj of objs){ 
+                        if (Number(obj.getAttribute('id')) === id){ 
+                            obj.setAttribute('class', 'data clicked')
+                        }
+                    }
+                    ft.setStyle(StyleElement)
+                    selectionedElement.id = id
+                    selectionedElement.name = ft.get('name')
+                    selectionedElement.station = ft.get('station')
+                    fetchlamps()
+                }else{ 
+                    ft.setStyle(StyleElement)
+                }
             }else{ 
-                ft.setStyle(StyleElement)
+                if (ft !== null){ 
+                    ft.setStyle(LampStyle)
+                }
+                if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
+                    ft = f
+                    ft.setStyle(StyleElement)
+                    selectionedElement.id = id
+                    selectionedElement.name = ft.get('name')
+                    selectionedElement.station = ft.get('station')
+                    fetchlamps()
+                }else{ 
+                    ft.setStyle(StyleElement)
+                }
             }
         }
     })
@@ -352,7 +377,7 @@ activeGeolocation.addEventListener('click',function(){
         geolocation.on('change:position', function(evt){ 
         geolocation.setTracking(false) // we will diseable the tracking 
        let accuracy = geolocation.getAccuracy()
-       if (accuracy < 13000){ 
+       if (accuracy < 16000){ 
             positions = geolocation.getPosition()
             createPositionFeature()
             activeGeolocation.setAttribute('class', 'control location actual')
@@ -428,6 +453,8 @@ function createPositionFeature(){
       lampsSource.clear()
       lampsSource.addFeatures(filteredFeatures)
   }
+
+
   function filterFeatures(elements,objs){ 
     let output = []
     for (let feature of elements){ 
@@ -451,6 +478,7 @@ function ShowFeature(element){
         element.setAttribute('class', 'data clicked') // we will give the tr element that receive the click another class attri
         let features = lampsSource.getFeatures()
         let featureToShow = features.find(feature => feature.id_ === id)
+        ft = featureToShow
         selectionedElement.id = featureToShow.getId()
         selectionedElement.name = featureToShow.get('name')
         selectionedElement.station = featureToShow.get('station')
@@ -475,6 +503,7 @@ function ShowFeature(element){
     return output 
   }
  
+
   function getCookie(name) { // Source of this function : the django documentation
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -529,6 +558,7 @@ zoomin.addEventListener('mouseleave', function(){
 zoomOut.addEventListener('mouseenter', function(){ 
     spanZoomOut.style.display = 'block'
 })
+
 zoomOut.addEventListener('mouseleave', function(){ 
     spanZoomOut.style.display = 'none'        
 })
@@ -539,6 +569,7 @@ map.on('pointermove', function(e){
     let XYcoords = formatCoord(coords).split(',')
     document.getElementById('position-mouse').textContent = XYcoords
 })
+
 let baseContainer = document.getElementById('base')
 let closeDivs = document.getElementsByClassName('close-information')
 for (let closeDiv of closeDivs){ 
