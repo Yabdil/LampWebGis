@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','webgis-lamp.herokuapp.com']
 
@@ -47,6 +47,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,16 +85,28 @@ WSGI_APPLICATION = 'lampProject.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 
+from os.path import join, dirname
+from dotenv import load_dotenv
+import dj_database_url
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'geodb',
         'HOST': 'localhost',
         'USER': 'postgres',
-        'PASSWORD': '699763'
+        'PASSWORD': '699763',
     }
 }
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
+# Create .env file path.
+#dotenv_path = join(dirname(__file__), '../.env')
+# Load file from the path.
+#load_dotenv(dotenv_path)
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -126,6 +143,8 @@ USE_L10N = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 STATIC_URL = 'geoapi/static/'
 STATICFILES_DIRS = [
