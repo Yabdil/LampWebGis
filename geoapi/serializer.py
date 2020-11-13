@@ -23,5 +23,5 @@ class Lamp_historiqueSerializer(serializers.ModelSerializer):
         lamp = data['lamp']
         total = Lamp_historique.objects.filter(lamp=lamp).order_by('created_At').first().total
         if data['total'] != total:
-            raise serializers.ValidationError(f'La somme totale ne doit pas dépasser {total}')
+            raise serializers.ValidationError(f'La somme totale doit être égale à {total}')
         return data

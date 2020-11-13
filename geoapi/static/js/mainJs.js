@@ -123,7 +123,7 @@ let StyleElement = new ol.style.Style({
         width: 2
     }),
     fill: new ol.style.Fill({
-        color: '#8B2318'
+        color: '#0853AA'
     })
     })
 });
@@ -267,11 +267,11 @@ function CreateLampGraphic(){
     let labels = []
     let elements = dataLamps
     for (let element of elements){ 
-        labels.push(new Date(element.created_At).toLocaleDateString())
+        labels.unshift(new Date(element.created_At).toLocaleDateString())
         if (ShowBy.value === 'number_off_lamp_On'){ 
-            data.push(element.number_off_lamp_On)
+            data.unshift(element.number_off_lamp_On)
         }
-        data.push(element.number_off_lamp_Off)
+        data.unshift(element.number_off_lamp_Off)
     }
     byId('myChart').remove() // will remove the others chart instances
     let chartCanvas = document.createElement('canvas')
@@ -310,29 +310,27 @@ let form = byId('form-data')
 let msgError = byId('msgError')
 let msgSucces = byId('msgConfirmation')
 showModal.addEventListener('click', function(){ 
-    divModal.style.display = 'block'
-    byId('name').value = selectionedElement.name
-    form.addEventListener('submit', SubmitForm) // the form is under the divModal
+    if (ft !== null){ 
+        divModal.style.display = 'block'
+        byId('name').value = selectionedElement.name
+        form.addEventListener('submit', SubmitForm) // the form is under the divModal
+    }
 })
 function SubmitForm(e){ 
     e.preventDefault()
     let number_off = Number(byId('numberOff').value)
     let number_on = Number(byId('numberOn').value)
     let comment = byId('comment').value
-    if (!number_off || !number_on){ 
-        msgError.innerHTML = 'Vous devez saisir au moins une valeur'
-        msgError.style.display = 'block'
-        console.log('stop')
-    }else{ 
-        let total = number_off + number_on
-        let newLampHistoric = { 
-            number_off_lamp_Off: number_off,
-            number_off_lamp_On: number_on,
-            total: total,
-            comment: comment,
-            lamp: selectionedElement.id,
-            hasWifi: byId('wifi').checked,
-            hasCamera: byId('Camera').checked,
+ 
+    let total = number_off + number_on
+    let newLampHistoric = { 
+        number_off_lamp_Off: number_off,
+        number_off_lamp_On: number_on,
+        total: total,
+        comment: comment,
+        lamp: selectionedElement.id,
+        hasWifi: byId('wifi').checked,
+        hasCamera: byId('Camera').checked,
     }
     let headers = new Headers();
     headers.append('X-CSRFToken', csrftoken)
@@ -343,6 +341,9 @@ function SubmitForm(e){
                     if (data.non_field_errors){ 
                         msgError.innerHTML = data.non_field_errors
                         msgError.style.display = 'block'
+                        setTimeout(function(){ 
+                            msgError.style.display = 'none'
+                        },2000)
                     }else{
                         msgSucces.style.display = 'block'
                         setTimeout(function(){ 
@@ -351,12 +352,11 @@ function SubmitForm(e){
                             ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
                             divModal.style.display = 'none'
                             msgSucces.style.display = 'none'
-                        },2000)
-                        
+                        },2000)   
                     }
                 })
-            }
-        }
+    }
+
 
 closeModal.addEventListener('click', function(e){ 
     e.preventDefault()

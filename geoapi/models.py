@@ -11,7 +11,6 @@ class Lamp(models.Model):
         return self.name
 
 from datetime import datetime
-from django.utils   import timezone
 
 class Lamp_historique(models.Model):
     lamp = models.ForeignKey(Lamp, on_delete=models.CASCADE)

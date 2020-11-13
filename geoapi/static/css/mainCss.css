@@ -104,8 +104,9 @@ img{
 }
 
 #table-information-genrales{ 
+    
     width: 98%;
-    font-size: 11px;
+    font-size: 10px;
     border-collapse: collapse;
     border-spacing: 0;
     border: 1px solid #888585;
@@ -218,6 +219,7 @@ img{
     margin-top: 4px;
     padding: 5px 7px;
     border-radius: 4px 4px 0px 0px;
+    height: 20px;
 }
 
 #selecte label{ 
@@ -236,12 +238,11 @@ img{
 }*/
 
 #selected{ 
+    color: black;
     padding: 1px 8px;
-    color: white;
-    border: none;
     border-radius: 4px;
-    outline: none;
-    background-color: #0D9738;
+    /*background-color: #0D9738;
+    -moz-background-color:#0D9738;*/
 }
 
 #selected:focus{ 
@@ -266,6 +267,10 @@ img{
 
 #name-information{ 
     margin-top: 0px;
+}
+
+#name{ 
+    background-color: inherit;
 }
 
 #numberOff-information{
@@ -591,7 +596,7 @@ h2{
 
     }
     .lamps-information{ 
-        margin-right: 0.6px;
+        margin-right: 0.75px;
     }
 
     #base{ 
@@ -603,7 +608,7 @@ h2{
     }
 
     #table-information-genrales{ 
-        font-size: 80%;
+        font-size: 75%;
         height: 50%;
        
     }
@@ -638,3 +643,5 @@ h2{
           top: 40%;
       }
   }
+
+
