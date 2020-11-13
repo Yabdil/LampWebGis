@@ -377,7 +377,7 @@ activeGeolocation.addEventListener('click',function(){
         geolocation.on('change:position', function(evt){ 
         geolocation.setTracking(false) // we will diseable the tracking 
        let accuracy = geolocation.getAccuracy()
-       if (accuracy < 16000){ 
+       if (accuracy < 15000){ 
             positions = geolocation.getPosition()
             createPositionFeature()
             activeGeolocation.setAttribute('class', 'control location actual')
