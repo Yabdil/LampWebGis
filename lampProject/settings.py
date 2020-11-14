@@ -25,7 +25,7 @@ SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','webgis-lamp.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','142.93.171.149']
 
 
 # Application definition
