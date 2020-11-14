@@ -67,7 +67,7 @@ ROOT_URLCONF = 'lampProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # les dossiers dans lesquels se trouvent les templates
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True, #Ici on dit a django d'aller chercher les templates au sein des applications
         'OPTIONS': {
             'context_processors': [
