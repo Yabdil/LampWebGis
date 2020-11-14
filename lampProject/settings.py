@@ -100,11 +100,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'mygeodb',
-        'USER': 'abdidb',
-        'PASSWORD': 'mama1456',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'd3g2t572nejcn8',
+        'USER': 'uninqyhtdiawxy',
+        'PASSWORD': '3a06535b921403707527a0dd2b67fb495e0ff51f587bae3e70377d1213ceca2d',
+        'HOST': 'ec2-54-75-244-161.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
