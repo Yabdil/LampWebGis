@@ -87,13 +87,24 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'geodb',
         'HOST': 'localhost',
         'USER': 'postgres',
         'PASSWORD': '699763',
+    }
+}'''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'mygeodb',
+        'USER': 'abdidb',
+        'PASSWORD': 'mama1456',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -142,7 +153,7 @@ USE_L10N = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 STATIC_URL = 'geoapi/static/'
 STATICFILES_DIRS = [
