@@ -85,9 +85,7 @@ WSGI_APPLICATION = 'lampProject.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-from os.path import join, dirname
-from dotenv import load_dotenv
-import dj_database_url
+
 
 DATABASES = {
     'default': {
@@ -99,7 +97,7 @@ DATABASES = {
     }
 }
 
-db_from_env = dj_database_url.config(conn_max_age=500)
+'''db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 from os import environ
 # Create .env file path.
@@ -107,8 +105,7 @@ from os import environ
 # Load file from the path.
 #load_dotenv(dotenv_path)
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
-
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')'''
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
