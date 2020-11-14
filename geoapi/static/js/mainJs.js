@@ -62,7 +62,7 @@ let defaultZoom = 13
 const map = new ol.Map({
     target: document.getElementById('map'),
     layers: [
-        OSMTile,
+        satelliteTile,
         lampsVector
     ],
     view: new ol.View({
