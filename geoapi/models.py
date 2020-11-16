@@ -9,7 +9,7 @@ class Lamp(models.Model):
 
     def __str__(self):
         return self.name
-
+        
 from datetime import datetime
 
 class Lamp_historique(models.Model):

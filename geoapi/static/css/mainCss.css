@@ -489,7 +489,7 @@ span{
     top: 105px;
     left: 132px;
     width: 300px;
-    display: none;
+    display: block;
 }
 
 h2{ 
@@ -510,8 +510,7 @@ h2{
 
 #lamps-table td{
     text-align: left;
-    padding: 2% 2% 3% 5%;
-    
+    padding: 2% 2% 3% 5%;   
 }
 
 #lamps-table th{ 
@@ -569,7 +568,7 @@ h2{
     right: 40px;
     background-color: #F9F8F4;
     border-radius: 3px 3px 0px 0px;
-    font-size: 13px;
+    font-size: 11px;
     padding-right: 4px;
 }
 
@@ -583,25 +582,23 @@ h2{
     color:  #1B9E0D;
 }
 
+/* for a screen < 800px a tablet we will make the app responsive*/
 
 @media screen and (max-width: 800px) {
 
     #nearest-lamps{ 
         width: 200px;
         font-size: 70%;
-        position: absolute;
-        top: 8%;
         height: 150px;
-        left: 60%;
-
     }
+
     .lamps-information{ 
-        margin-right: 0.75px;
+        margin-right: 0.90px;
     }
 
     #base{ 
         position: absolute;
-        top: 350px;
+        top: 40%;
         width: 300px;
         height: 50%;
         font-size: 80%;
@@ -627,8 +624,12 @@ h2{
         left: 20%;
     }
 
+    #myChart{ 
+        width: 100%;
+    }
+
     #lamps-table{ 
-        height: 80%;
+        height: 75%;
     }
     #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
         visibility: hidden;
@@ -637,10 +638,33 @@ h2{
   }
 
 
-  @media screen and (max-height: 700px){ 
+  /* this is for a portable even if it's complicate to show everything on the map*/
+
+  @media screen and (max-width: 500px){ 
       #base{ 
           position: absolute;
-          top: 40%;
+          height: 150px;
+          top: 330px;
+      }
+
+      .header{ 
+          font-size: 60%;
+      }
+
+      .fond{ 
+          position: absolute;
+          bottom: 40px;
+      }
+
+      #position-mouse{ 
+          font-size: 10px;
+          position: absolute;
+          bottom: 1px;
+      }
+
+      #nearest-lamps{ 
+        top: 8%;
+        left: 40%;
       }
   }
 

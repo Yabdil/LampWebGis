@@ -22,8 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
 
+import json
+
+
+ENVIRONNEMENT = 'DEV'
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if ENVIRONNEMENT == 'DEV':
+   DEBUG = True
+else:
+    DEBUG = False #we will turn debug to false in a prod or preprod env
+
 
 ALLOWED_HOSTS = ['127.0.0.1','142.93.171.149']
 
@@ -85,38 +94,43 @@ WSGI_APPLICATION = 'lampProject.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 
+with open('lampProject/env.json') as file:
+    features = json.load(file)['env']
 
-
-'''DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'geodb',
-        'HOST': 'localhost',
-        'USER': 'postgres',
-        'PASSWORD': '699763',
+if ENVIRONNEMENT == 'DEV':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': features['DEV']['NAME'],
+            'USER': features['DEV']['USER'],
+            'PASSWORD': features['DEV']['PASSWORD'],
+            'HOST': features['DEV']['HOST'],
+            'PORT': features['DEV']['PORT'],
+        }
     }
-}'''
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'd3g2t572nejcn8',
-        'USER': 'uninqyhtdiawxy',
-        'PASSWORD': '3a06535b921403707527a0dd2b67fb495e0ff51f587bae3e70377d1213ceca2d',
-        'HOST': 'ec2-54-75-244-161.eu-west-1.compute.amazonaws.com',
-        'PORT': '5432',
+elif ENVIRONNEMENT == 'PREPROD':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': features['PREPROD']['NAME'],
+            'USER': features['PREPROD']['USER'],
+            'PASSWORD': features['PREPROD']['PASSWORD'],
+            'HOST': features['PREPROD']['HOST'],
+            'PORT': features['PREPROD']['PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': features['PROD']['NAME'],
+            'USER': features['PROD']['USER'],
+            'PASSWORD': features['PROD']['PASSWORD'],
+            'HOST': features['PROD']['HOST'],
+            'PORT': features['PROD']['PORT'],
+        }
+    }
 
-'''db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-from os import environ
-# Create .env file path.
-#dotenv_path = join(dirname(__file__), '../.env')
-# Load file from the path.
-#load_dotenv(dotenv_path)
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')'''
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -152,7 +166,6 @@ USE_L10N = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 STATIC_URL = 'geoapi/static/'

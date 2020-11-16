@@ -5,12 +5,15 @@ from rest_framework import generics
 from .serializer import LampSerializer, Lamp_historiqueSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import json
 
 class LampView(APIView):
     def get(self, request):
         queryset = Lamp.objects.all()
         serializer = LampSerializer(queryset, many=True)
         return Response(serializer.data, status=200)
+
+    
     def post(self, request):
         serializer = LampSerializer(data=request.data)
         if serializer.is_valid():
@@ -37,7 +40,7 @@ class LampDetailsHistorique(APIView):
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.core import serializers
-import json
+
 class NerestLamp(APIView):
     def get(self, request):
         lat = request.query_params.get('lat')
