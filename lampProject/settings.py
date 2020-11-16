@@ -95,7 +95,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 with open('lampProject/env.json') as file:
-    features = json.load(file)['env']
+    env_file = json.load(file)['env']
 
 if ENVIRONNEMENT == 'DEV':
     DATABASES = {
