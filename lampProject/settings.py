@@ -25,7 +25,7 @@ SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
 import json
 
 
-ENVIRONNEMENT = 'DEV'
+ENVIRONNEMENT = 'PROD'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
@@ -101,33 +101,33 @@ if ENVIRONNEMENT == 'DEV':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': features['DEV']['NAME'],
-            'USER': features['DEV']['USER'],
-            'PASSWORD': features['DEV']['PASSWORD'],
-            'HOST': features['DEV']['HOST'],
-            'PORT': features['DEV']['PORT'],
+            'NAME': env_file['DEV']['NAME'],
+            'USER': env_file['DEV']['USER'],
+            'PASSWORD': env_file['DEV']['PASSWORD'],
+            'HOST': env_file['DEV']['HOST'],
+            'PORT': env_file['DEV']['PORT'],
         }
     }
 elif ENVIRONNEMENT == 'PREPROD':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': features['PREPROD']['NAME'],
-            'USER': features['PREPROD']['USER'],
-            'PASSWORD': features['PREPROD']['PASSWORD'],
-            'HOST': features['PREPROD']['HOST'],
-            'PORT': features['PREPROD']['PORT'],
+            'NAME': env_file['PREPROD']['NAME'],
+            'USER': env_file['PREPROD']['USER'],
+            'PASSWORD': env_file['PREPROD']['PASSWORD'],
+            'HOST': env_file['PREPROD']['HOST'],
+            'PORT': env_file['PREPROD']['PORT'],
         }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': features['PROD']['NAME'],
-            'USER': features['PROD']['USER'],
-            'PASSWORD': features['PROD']['PASSWORD'],
-            'HOST': features['PROD']['HOST'],
-            'PORT': features['PROD']['PORT'],
+            'NAME': env_file['PROD']['NAME'],
+            'USER': env_file['PROD']['USER'],
+            'PASSWORD': env_file['PROD']['PASSWORD'],
+            'HOST': env_file['PROD']['HOST'],
+            'PORT': env_file['PROD']['PORT'],
         }
     }
 
