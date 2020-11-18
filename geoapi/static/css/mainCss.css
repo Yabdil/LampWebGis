@@ -489,7 +489,7 @@ span{
     top: 105px;
     left: 132px;
     width: 300px;
-    display: block;
+    display: none;
 }
 
 h2{ 
@@ -644,7 +644,7 @@ h2{
       #base{ 
           position: absolute;
           height: 150px;
-          top: 330px;
+          top: 35%;
       }
 
       .header{ 
@@ -666,6 +666,23 @@ h2{
         top: 8%;
         left: 40%;
       }
+
+      #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
+        visibility: hidden;
+    }
   }
+
+  @media screen and (max-height: 600px){ 
+    #base{ 
+        position: absolute;
+        height: 150px;
+        top: 20%;
+    }
+    #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
+        visibility: hidden;
+    }
+
+  }
+
 
 

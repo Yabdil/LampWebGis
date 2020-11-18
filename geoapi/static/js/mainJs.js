@@ -345,14 +345,11 @@ function SubmitForm(e){
                             msgError.style.display = 'none'
                         },2000)
                     }else{
-                        msgSucces.style.display = 'block'
-                        setTimeout(function(){ 
                             fetchlamps()
                             form.reset()
                             ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
                             divModal.style.display = 'none'
                             msgSucces.style.display = 'none'
-                        },2000)   
                     }
                 })
     }
@@ -581,11 +578,16 @@ for (let closeDiv of closeDivs){
             parentDiv.style.display = 'none'
             msgError.style.display = 'none'
         }else if (parentDiv.getAttribute('id') === 'nearest-lamps'){ 
-            ClearTable()
-            activeGeolocation.setAttribute('class', 'control location')
-            parentDiv.style.display = 'none'
-            map.removeLayer(vectorPosition)
-            lampsSource.refresh()
+            fetch('getGeojson').then(res => res.json()).then(function(data){ 
+                let format =  new ol.format.GeoJSON()
+                lampsSource.clear()
+                let features = format.readFeatures(data,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'})
+                lampsSource.addFeatures(features)
+                ClearTable()
+                activeGeolocation.setAttribute('class', 'control location')
+                parentDiv.style.display = 'none'
+                map.removeLayer(vectorPosition)
+            })
         }
         parentDiv.style.display = 'none'       
     })
@@ -598,6 +600,5 @@ function ClearTable(){
         parent.removeChild(data)
     }
 }
-//apps is ok
 
 

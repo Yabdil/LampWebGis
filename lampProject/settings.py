@@ -24,17 +24,22 @@ SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
 
 import json
 
+with open('lampProject/env.json') as file:
+    jsonFile = json.load(file)
+    env_file = jsonFile['env']
+    hosts = jsonFile['ALLOWED_HOSTS']
 
-ENVIRONNEMENT = 'PROD'
+
+ENVIRONNEMENT = 'PREPROD'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
-   DEBUG = True
+    DEBUG = True
 else:
     DEBUG = False #we will turn debug to false in a prod or preprod env
 
 
-ALLOWED_HOSTS = ['127.0.0.1','142.93.171.149']
+ALLOWED_HOSTS = hosts
 
 
 # Application definition
@@ -94,8 +99,7 @@ WSGI_APPLICATION = 'lampProject.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-with open('lampProject/env.json') as file:
-    env_file = json.load(file)['env']
+
 
 if ENVIRONNEMENT == 'DEV':
     DATABASES = {

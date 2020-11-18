@@ -19,9 +19,11 @@ class Lamp_historiqueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lamp_historique
         fields = '__all__'
+        
     def validate(self, data):
         lamp = data['lamp']
-        total = Lamp_historique.objects.filter(lamp=lamp).order_by('created_At').first().total
-        if data['total'] != total:
-            raise serializers.ValidationError(f'La somme totale doit être égale à {total}')
+        obj = Lamp_historique.objects.filter(lamp=lamp).order_by('created_At')
+        if len(total) > 0:
+            if data['total'] != obj.first().total:
+                raise serializers.ValidationError(f'La somme totale doit être égale à {total}')
         return data
