@@ -30,7 +30,7 @@ with open('lampProject/env.json') as file:
     hosts = jsonFile['ALLOWED_HOSTS']
 
 
-ENVIRONNEMENT = 'PREPROD'
+ENVIRONNEMENT = 'DEV'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
