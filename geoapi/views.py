@@ -32,7 +32,6 @@ class LampDetailsHistorique(APIView):
 
     def post(self, request, pk):
         serializer = Lamp_historiqueSerializer(data=request.data)
-        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -56,6 +55,7 @@ class NerestLamp(APIView):
 def transformDistanceValueToFloat(value):
     distance = str(value)
     return float(distance.split(' ')[0]) # we dont need the m meter 
+
 
 def openApp(request):
     return render(request, 'mainPage1.html')

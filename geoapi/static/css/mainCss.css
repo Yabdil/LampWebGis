@@ -20,7 +20,6 @@ h2{
 
 img{ 
     width: 100px;
-    cursor: pointer;
 }
 
 .appName{
@@ -53,6 +52,19 @@ img{
 
 .header i:hover{
     color: #D70D0D;
+}
+
+.display-modal{ 
+    position: absolute;
+    top: 190px;
+    right: 5px;
+    font-size: 30px;
+    color: #2475B3;
+    cursor: pointer;
+}
+
+.display-modal:hover{ 
+    background-color: #DCD7D7;
 }
 
 #base{ 
@@ -322,6 +334,7 @@ img{
     border: none;
     outline: none;
     border-radius: 6px;
+    resize: none;
 }
 
 #numberOff, #numberOn{ 
@@ -415,7 +428,7 @@ h3{
     position: absolute;
     top: 170px;
     left: 10px;
-    padding: 7px 8px;
+    padding: 6px 7px;
 }
 
 #location{ 
@@ -456,6 +469,7 @@ span{
     top: 135px;
     left: 45px;
 }
+
 #zoominspan{ 
     position: absolute;
     top: 105px;
@@ -564,18 +578,18 @@ h2{
 
 #Ol-OSM{ 
     position: absolute;
-    bottom: 5px;
-    right: 40px;
+    bottom: 4px;
+    right: 20px;
     background-color: #F9F8F4;
-    border-radius: 3px 3px 0px 0px;
+    /*border-radius: 3px 3px 0px 0px;*/
     font-size: 11px;
     padding-right: 4px;
 }
 
 #Ol-OSM a{ 
     text-decoration: none;
-    padding: 50px 2px;
-    color: #03899c;
+    padding: 0px 2px;
+    color: #0B223C;
 }
 
 #Ol-OSM a:hover{ 
@@ -596,9 +610,12 @@ h2{
         margin-right: 0.90px;
     }
 
-    #base{ 
+    #base,.display-modal{ 
         position: absolute;
-        top: 40%;
+        top: 40%;  
+    }
+    
+    #base{ 
         width: 300px;
         height: 50%;
         font-size: 80%;
@@ -638,15 +655,19 @@ h2{
   }
 
 
-  /* this is for a portable even if it's complicate to show everything on the map*/
+  /* this is for a portable even if it's complicate to show everything on the device we will try*/
 
   @media screen and (max-width: 500px){ 
-      #base{ 
+
+      #base,.display-modal{ 
           position: absolute;
-          height: 150px;
           top: 35%;
       }
-
+     
+      #base{
+        height: 150px;
+      } 
+      
       .header{ 
           font-size: 60%;
       }
@@ -673,11 +694,11 @@ h2{
   }
 
   @media screen and (max-height: 600px){ 
-    #base{ 
+    #base,.display-modal{ 
         position: absolute;
-        height: 150px;
         top: 20%;
     }
+
     #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
         visibility: hidden;
     }

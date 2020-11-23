@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 class LampSerializer(GeoFeatureModelSerializer):
     diff = serializers.SerializerMethodField()
-    def get_diff(self,obj):
+    def get_diff(self,obj): # This method's goal is to get the recent maintenance for each lamp
         LampDiff = 0
         if Lamp_historique.objects.filter(lamp=obj).exists():
             lamp = Lamp_historique.objects.filter(lamp=obj).order_by('-created_At').first()
@@ -15,6 +15,7 @@ class LampSerializer(GeoFeatureModelSerializer):
         geo_field = "coord_X_Y"
         fields = '__all__'
 
+
 class Lamp_historiqueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lamp_historique
@@ -23,7 +24,8 @@ class Lamp_historiqueSerializer(serializers.ModelSerializer):
     def validate(self, data):
         lamp = data['lamp']
         obj = Lamp_historique.objects.filter(lamp=lamp).order_by('created_At')
-        if len(total) > 0:
-            if data['total'] != obj.first().total:
+        if len(obj) > 0:
+            total = obj.first().total
+            if data['total'] != total:
                 raise serializers.ValidationError(f'La somme totale doit être égale à {total}')
         return data

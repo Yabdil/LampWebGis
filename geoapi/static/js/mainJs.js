@@ -21,13 +21,13 @@ let lampsSource = new ol.source.Vector({
     url : 'getGeojson',
     format: new ol.format.GeoJSON(),
 })
-function LampStyle(feature,resolution) {
+function lampStyle(feature,resolution) {
     let diff = feature.get('diff')
     let style = new ol.style.Style()
     if (diff < 0){ 
         style.setImage(
             new ol.style.Circle({
-                radius: 5,
+                radius: 5.5,
                 stroke: new ol.style.Stroke({
                     color: 'white',
                     width: 2
@@ -40,7 +40,7 @@ function LampStyle(feature,resolution) {
     }else{ 
         style.setImage(
             new ol.style.Circle({
-                radius: 5,
+                radius: 5.5,
                 stroke: new ol.style.Stroke({
                     color: 'white',
                     width: 2
@@ -55,7 +55,7 @@ function LampStyle(feature,resolution) {
 }
 let lampsVector = new ol.layer.Vector({ 
     source: lampsSource,
-    style: LampStyle
+    style: lampStyle
 })
 
 let defaultZoom = 13
@@ -75,7 +75,7 @@ const map = new ol.Map({
 });
 
 
-/* Programming the interaction actions, like changing the basemap 
+/* Programming the actions, like changing the basemap 
 */
 
 function byClass(element){ 
@@ -89,7 +89,7 @@ let baseMaps = byClass('fond')
 for (let baseMap of baseMaps){ 
     baseMap.addEventListener('click', function(){  
         if (!baseMap.getAttribute('class').includes('active')){
-            RemoveAttributeActive() 
+            removeAttributeActive() 
             baseMap.setAttribute('class', 'fond active')
             let mapTile = baseMap.getAttribute('id')
             switch(mapTile){
@@ -108,16 +108,16 @@ for (let baseMap of baseMaps){
     })
 }
 
-function RemoveAttributeActive(){ 
+function removeAttributeActive(){ 
     for (let base of baseMaps){ 
         if (base.getAttribute('class').includes('active')){
             base.setAttribute('class', 'fond')
         }
     }
 }
-let StyleElement = new ol.style.Style({
+let styleElement = new ol.style.Style({
     image: new ol.style.Circle({
-        radius: 5,
+        radius: 5.5,
     stroke: new ol.style.Stroke({
         color: 'white',
         width: 2
@@ -127,69 +127,85 @@ let StyleElement = new ol.style.Style({
     })
     })
 });
+
+function resetStyle(){ 
+    let features = lampsSource.getFeatures()
+    for (let feature of features){ 
+        feature.setStyle(lampStyle)
+    }
+}
+
 let selectionedElement =  {}
-let ft = null
+let featureClicked = null
 map.on('click', function(e) {
     let pixels = e.pixel
     map.forEachFeatureAtPixel(pixels, function(f,layer){
-        if (layer.className_ !== 'geoloc'){ // we dont want to style the geoloc feature
-            byId('base').style.display = 'block'
+        let idOfLayer = Number(layer.ol_uid)
+        if (idOfLayer !== 29){ // we dont want to style the geolocalization feature 
             let id = f.getId()
-            let objs = byClass('data')
-            if (objs.length > 0){ // we will synchronise the map and the table 
-                if (ft !== null){ 
-                    ft.setStyle(LampStyle)
+            let trElements = byClass('data')
+            if (trElements.length > 0){ // we will synchronise the map and the table 
+                if (featureClicked !== null){ 
+                    resetStyle()
                 }
                 if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
-                    ft = f
-                    for (let obj of objs){ 
-                        obj.setAttribute('class','data')
+                    featureClicked = f
+                    for (let trElement of trElements){ 
+                        trElement.setAttribute('class','data')
                     }
-                    for (let obj of objs){ 
-                        if (Number(obj.getAttribute('id')) === id){ 
-                            obj.setAttribute('class', 'data clicked')
+                    for (let trElement of trElements){ 
+                        if (Number(trElement.getAttribute('id')) === id){ 
+                            trElement.setAttribute('class', 'data clicked')
                         }
                     }
-                    ft.setStyle(StyleElement)
+                    featureClicked.setStyle(styleElement)
                     selectionedElement.id = id
-                    selectionedElement.name = ft.get('name')
-                    selectionedElement.station = ft.get('station')
-                    fetchlamps()
+                    selectionedElement.name = featureClicked.get('name')
+                    selectionedElement.station = featureClicked.get('station')
+                    fetchLamps()
                 }else{ 
-                    ft.setStyle(StyleElement)
+                    featureClicked.setStyle(styleElement)
                 }
             }else{ 
-                if (ft !== null){ 
-                    ft.setStyle(LampStyle)
+                if (featureClicked !== null){ 
+                    resetStyle()
                 }
-                if (!selectionedElement || selectionedElement.id !== id){ // we dont want that a user click the same obj repetly
-                    ft = f
-                    ft.setStyle(StyleElement)
+                if (!selectionedElement || selectionedElement.id !== id){ 
+                    featureClicked = f
+                    featureClicked.setStyle(styleElement)
                     selectionedElement.id = id
-                    selectionedElement.name = ft.get('name')
-                    selectionedElement.station = ft.get('station')
-                    fetchlamps()
+                    selectionedElement.name = featureClicked.get('name')
+                    selectionedElement.station = featureClicked.get('station')
+                    fetchLamps()
                 }else{ 
-                    ft.setStyle(StyleElement)
+                    featureClicked.setStyle(styleElement)
                 }
             }
         }
     })
 })
+let BaseModal =  byId('base')
+let showBaseModal = document.getElementById('display-base')
+showBaseModal.addEventListener('click',function(){ 
+    BaseModal.style.transition = "all 2s"
+    BaseModal.style.display = "block"
+})
+
+
 let dataLamps = []
-function fetchlamps(){ 
+function fetchLamps(){ 
     fetch(`lamphistorique/${selectionedElement.id}`)
     .then(function(res){ 
         return res.json()
     })
     .then(function(data){  
         dataLamps = data
-        CreateLampTable(data[0]) // As our data are ordered by datetime we want to show up the recent data
-        CreateLampGraphic()
+        createLampTable(data[0]) // As our data are ordered by datetime we want to show up the recent data
+        createLampGraphic()
     })
 }
 
-function CreateLampTable(data){
+function createLampTable(data){
     let tableBody = byId('table-information-genrales').getElementsByTagName('tbody')[0]
     let newRow = document.createElement('tr')
     if (!data){ 
@@ -207,9 +223,9 @@ function CreateLampTable(data){
         tableBody.appendChild(newRow)
     }else{
         let h5 = byId('generales-information').getElementsByTagName('h5')[0]
-        let hours =   AddZero(new Date(data.created_At).getHours())
-        let minutes = AddZero(new Date(data.created_At).getMinutes())
-        h5.innerHTML = 'Derniere modification:  ' + new Date(data.created_At).toLocaleDateString() + '   à  ' + hours + 'h' + minutes
+        let hours =   addZero(new Date(data.created_At).getHours())
+        let minutes = addZero(new Date(data.created_At).getMinutes())
+        h5.innerHTML = 'Derniere Maintenance:  ' + new Date(data.created_At).toLocaleDateString() + '   à  ' + hours + 'h' + minutes
         let difference = data.number_off_lamp_On - data.number_off_lamp_Off
         let services = getServices(data)
         newRow.setAttribute('id', selectionedElement.id)
@@ -254,7 +270,7 @@ function getServices(services){
     return outputServices
 }
 
-function AddZero(element){ 
+function addZero(element){ 
     if (element < 10){ 
         element = '0' + element
     }
@@ -262,7 +278,7 @@ function AddZero(element){
 }
 let ShowBy = byId('selected')
 
-function CreateLampGraphic(){ 
+function createLampGraphic(){ 
     let data = []
     let labels = []
     let elements = dataLamps
@@ -300,23 +316,23 @@ function CreateLampGraphic(){
 }
 
 ShowBy.addEventListener('change',function(){ 
-     CreateLampGraphic()
+    createLampGraphic()
 })
 
-let showModal = byClass('fa-edit')[0]
-let closeModal = byId('cancel')
-let divModal= document.getElementById('information-container')
+let showForm = byClass('fa-edit')[0]
+let closeForm = byId('cancel')
+let formContainer= document.getElementById('information-container')
 let form = byId('form-data')
 let msgError = byId('msgError')
 let msgSucces = byId('msgConfirmation')
-showModal.addEventListener('click', function(){ 
-    if (ft !== null){ 
-        divModal.style.display = 'block'
+showForm.addEventListener('click', function(){ 
+    if (featureClicked !== null){ 
+        formContainer.style.display = 'block' // the form is under the formContainer
         byId('name').value = selectionedElement.name
-        form.addEventListener('submit', SubmitForm) // the form is under the divModal
+        form.addEventListener('submit', submitForm) 
     }
 })
-function SubmitForm(e){ 
+function submitForm(e){ 
     e.preventDefault()
     let number_off = Number(byId('numberOff').value)
     let number_on = Number(byId('numberOn').value)
@@ -345,27 +361,27 @@ function SubmitForm(e){
                             msgError.style.display = 'none'
                         },2000)
                     }else{
-                            fetchlamps()
-                            form.reset()
-                            ft.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
-                            divModal.style.display = 'none'
-                            msgSucces.style.display = 'none'
+                        fetchLamps()
+                        form.reset()
+                        featureClicked.set('diff',data.number_off_lamp_On - data.number_off_lamp_Off)
+                        formContainer.style.display = 'none'
+                        msgSucces.style.display = 'none'
                     }
                 })
     }
 
 
-closeModal.addEventListener('click', function(e){ 
+closeForm.addEventListener('click', function(e){ 
     e.preventDefault()
     form.reset()
-    divModal.style.display = 'none'
+    formContainer.style.display = 'none'
     msgError.style.display = 'none'
 })
 let geolocation = new ol.Geolocation({ 
     projection: map.getView().getProjection()
 })
 let activeGeolocation = byId('location')
-let positions = null
+let positions = ol.proj.transform([43.106,11.594],'EPSG:4326','EPSG:3857')
 let vectorPosition = new ol.layer.Vector()
 let tableNearest = byId('nearest-lamps')
 activeGeolocation.addEventListener('click',function(){ 
@@ -375,12 +391,12 @@ activeGeolocation.addEventListener('click',function(){
         geolocation.setTracking(false) // we will diseable the tracking 
        let accuracy = geolocation.getAccuracy()
        if (accuracy < 17000){ 
-            positions = geolocation.getPosition()
+            //positions = geolocation.getPosition()
             createPositionFeature()
             activeGeolocation.setAttribute('class', 'control location actual')
             showNearestLamps()  
         }else{  // case where the accuracy is low, we will just center the map, but not show the marker
-            positions = geolocation.getPosition()
+            //positions = geolocation.getPosition()
             map.getView().setCenter(positions)
             map.getView().setZoom(15)
         }  
@@ -416,15 +432,16 @@ function createPositionFeature(){
       })
     );
     positionFeature.setGeometry(new ol.geom.Point(positions))
+    //positionFeature.setGeometry(new ol.geom.Point(ol.proj.transform(positions,'EPSG:4326','EPSG:3857')))
     let sourceFeaturePosition = new ol.source.Vector({ 
         format: new ol.format.GeoJSON(),
         features: [positionFeature]
     })
     vectorPosition.setSource(sourceFeaturePosition)
-    vectorPosition.set('className','geoloc')
+    vectorPosition.set('className','geolocalization')
     map.addLayer(vectorPosition)
     map.getView().setCenter(positions)
-    map.getView().setZoom(16)  
+    map.getView().setZoom(17)  
   }
   let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
   function nearestLampTable(elements){ 
@@ -439,13 +456,15 @@ function createPositionFeature(){
                                 </tr>`
       }
       /* the first tr element will receive a class attribute data clicked in order to style it differently */
-      tableBody.getElementsByTagName('tr')[1].setAttribute('class', 'data clicked')
+      let firstTr = tableBody.getElementsByTagName('tr')[1]
+      firstTr.setAttribute('class', 'data clicked')
+      let features = lampsSource.getFeatures()
+      resetStyle()
       tableNearest.style.display = 'block'
       let ids = []
       for (let element of elements){ 
             ids.push(Number(element.id))
       }
-      let features = lampsSource.getFeatures()
       let filteredFeatures = filterFeatures(features,ids)
       lampsSource.clear()
       lampsSource.addFeatures(filteredFeatures)
@@ -464,7 +483,6 @@ function createPositionFeature(){
   
 
 function ShowFeature(element){ 
-    byId('base').style.display = 'block'
     let lampTrs = tableBody.querySelectorAll('tr.data')
     let id = Number(element.getAttribute('id'))
     let idClicked = byClass('data clicked')[0].getAttribute('id')
@@ -475,15 +493,13 @@ function ShowFeature(element){
         element.setAttribute('class', 'data clicked') // we will give the tr element that receive the click another class attri
         let features = lampsSource.getFeatures()
         let featureToShow = features.find(feature => feature.id_ === id)
-        ft = featureToShow
+        featureClicked = featureToShow
         selectionedElement.id = featureToShow.getId()
         selectionedElement.name = featureToShow.get('name')
         selectionedElement.station = featureToShow.get('station')
-        for (let feature of features){ 
-            feature.setStyle(LampStyle)
-        }
-        featureToShow.setStyle(StyleElement)
-        fetchlamps()
+        resetStyle()
+        featureToShow.setStyle(styleElement)
+        fetchLamps()
     }
 }
 
@@ -562,12 +578,11 @@ zoomOut.addEventListener('mouseleave', function(){
 
 map.on('pointermove', function(e){ 
     let coords = ol.proj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326')
-    let formatCoord = ol.coordinate.createStringXY(4)
+    let formatCoord = ol.coordinate.createStringXY(3)
     let XYcoords = formatCoord(coords).split(',')
     document.getElementById('position-mouse').textContent = XYcoords
 })
 
-let baseContainer = document.getElementById('base')
 let closeDivs = document.getElementsByClassName('close-information')
 for (let closeDiv of closeDivs){ 
     closeDiv.addEventListener('click', function(){ 
@@ -583,7 +598,10 @@ for (let closeDiv of closeDivs){
                 lampsSource.clear()
                 let features = format.readFeatures(data,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'})
                 lampsSource.addFeatures(features)
-                ClearTable()
+                let feature = features.find(feature => feature.id_ === featureClicked.id_)
+                feature.setStyle(styleElement)
+                featureClicked = feature
+                clearTable()
                 activeGeolocation.setAttribute('class', 'control location')
                 parentDiv.style.display = 'none'
                 map.removeLayer(vectorPosition)
@@ -593,7 +611,7 @@ for (let closeDiv of closeDivs){
     })
 }
 
-function ClearTable(){ 
+function clearTable(){ 
     let datas = document.querySelectorAll('tr.data')
     for (let data of datas){ 
         let parent = data.parentElement

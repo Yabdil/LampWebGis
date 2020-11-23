@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Application</title>
-        <link rel="stylesheet"  type="text/css" href="{% static 'css/mainCss.css'  %}">
+        <title>SIGEPD</title>
+         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet"  type="text/css" href="{% static 'css/mainCss.css'  %}">
         <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css">
         <script src="https://kit.fontawesome.com/2466fa8278.js" crossorigin="anonymous"></script>
@@ -29,6 +30,8 @@
             <a href="https://openlayers.org/" id="ol" target="_blank">Openlayers</a>
             <a href="https://www.openstreetmap.org/copyright/fr" id="osm" target="_blank">OpenStreetMap contributors</a>
         </div>
+       
+        <a class="show display-modal" id="display-base"><i class="fas fa-angle-double-left"></i></a>
         <div id="base">
             <div class="main-information">
                 <h3>Informations Générales</h3>
@@ -36,7 +39,7 @@
             </div>
             <div id="contain">
                  <div id="generales-information">
-                    <h5>Derniere modification: 12/05/2020 à 9h45</h5>
+                    <h5>Derniere Maintenance: 12/05/2020 à 9h45</h5>
                     <i class="fas fa-edit"></i>
                     <table id="table-information-genrales">
                         <tr id="title">
@@ -45,7 +48,7 @@
                             <th>Allumés</th>
                             <th>Eteints</th>
                             <th>Différence</th>
-                            <th>Services</th>
+                            <th>Service(s)</th>
                         </tr>
                     </table>
                  </div>
@@ -81,7 +84,7 @@
         <div id="information-container">
             <form id="form-data" action="#">
                 <div class="lamps-information">
-                    <h3>Mettre à jour</h3>
+                    <h3>Ajoutez une Maintenance</h3>
                     <a class="close-information" id="close-information-container"><i class="far fa-times-circle"></i></a>
                 </div>
                 <div class="msg">

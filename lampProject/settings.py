@@ -16,19 +16,16 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'a$n@_hsbe+i3^^mmh1!ewxj^^=1@xk-t5bh8h550^eak1=ekcz'
-
+# we will use the env.json file for the settings
 import json
 
 with open('lampProject/env.json') as file:
     jsonFile = json.load(file)
-    env_file = jsonFile['env']
+    DB_ENV = jsonFile['DB']
     hosts = jsonFile['ALLOWED_HOSTS']
-
+    key = jsonFile['SECRET_KEY']
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = key
 
 ENVIRONNEMENT = 'PROD'
 
@@ -105,33 +102,33 @@ if ENVIRONNEMENT == 'DEV':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': env_file['DEV']['NAME'],
-            'USER': env_file['DEV']['USER'],
-            'PASSWORD': env_file['DEV']['PASSWORD'],
-            'HOST': env_file['DEV']['HOST'],
-            'PORT': env_file['DEV']['PORT'],
+            'NAME': DB_ENV ['DEV']['NAME'],
+            'USER': DB_ENV ['DEV']['USER'],
+            'PASSWORD': DB_ENV ['DEV']['PASSWORD'],
+            'HOST': DB_ENV ['DEV']['HOST'],
+            'PORT': DB_ENV ['DEV']['PORT'],
         }
     }
 elif ENVIRONNEMENT == 'PREPROD':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': env_file['PREPROD']['NAME'],
-            'USER': env_file['PREPROD']['USER'],
-            'PASSWORD': env_file['PREPROD']['PASSWORD'],
-            'HOST': env_file['PREPROD']['HOST'],
-            'PORT': env_file['PREPROD']['PORT'],
+            'NAME': DB_ENV ['PREPROD']['NAME'],
+            'USER': DB_ENV ['PREPROD']['USER'],
+            'PASSWORD': DB_ENV ['PREPROD']['PASSWORD'],
+            'HOST': DB_ENV ['PREPROD']['HOST'],
+            'PORT': DB_ENV ['PREPROD']['PORT'],
         }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': env_file['PROD']['NAME'],
-            'USER': env_file['PROD']['USER'],
-            'PASSWORD': env_file['PROD']['PASSWORD'],
-            'HOST': env_file['PROD']['HOST'],
-            'PORT': env_file['PROD']['PORT'],
+            'NAME': DB_ENV ['PROD']['NAME'],
+            'USER': DB_ENV ['PROD']['USER'],
+            'PASSWORD': DB_ENV ['PROD']['PASSWORD'],
+            'HOST': DB_ENV ['PROD']['HOST'],
+            'PORT': DB_ENV ['PROD']['PORT'],
         }
     }
 
@@ -165,7 +162,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-#USE_TZ = True
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
