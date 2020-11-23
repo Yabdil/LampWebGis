@@ -24,3 +24,11 @@ The features that offers the application are :
 
 ->By using a chart, the application shows the last four maintenances of a lamp
 
+Installation 
+
+git clone https://github.com/Yabdil/LampWebGis.git
+
+Activate the virtual env 
+
+Dont forget to install all the requirements by using this command: pip install -r requirements.txt 
+
