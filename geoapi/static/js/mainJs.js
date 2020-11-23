@@ -276,7 +276,7 @@ function addZero(element){
     }
     return element
 }
-let ShowBy = byId('selected')
+let showBy = byId('selected')
 
 function createLampGraphic(){ 
     let data = []
@@ -284,7 +284,7 @@ function createLampGraphic(){
     let elements = dataLamps
     for (let element of elements){ 
         labels.unshift(new Date(element.created_At).toLocaleDateString())
-        if (ShowBy.value === 'number_off_lamp_On'){ 
+        if (showBy.value === 'number_off_lamp_On'){ 
             data.unshift(element.number_off_lamp_On)
         }
         data.unshift(element.number_off_lamp_Off)
@@ -298,8 +298,8 @@ function createLampGraphic(){
             data: {
             labels: labels,
             datasets: [{
-                label: ShowBy.value === 'number_off_lamp_Off' ? 'Eteint': 'Allumé',
-                borderColor: ShowBy.value === 'number_off_lamp_Off' ? '#D21F0D': 'blue',
+                label: showBy.value === 'number_off_lamp_Off' ? 'Eteint': 'Allumé',
+                borderColor: showBy.value === 'number_off_lamp_Off' ? '#D21F0D': 'blue',
                 data: data
             }]
         },
@@ -315,7 +315,7 @@ function createLampGraphic(){
     });
 }
 
-ShowBy.addEventListener('change',function(){ 
+showBy.addEventListener('change',function(){ 
     createLampGraphic()
 })
 
@@ -447,8 +447,8 @@ function createPositionFeature(){
   function nearestLampTable(elements){ 
       let i = 0
       for (i; i < elements.length; i++){ 
-        let distance = ConvertDistance(elements[i].distance)
-        tableBody.innerHTML += `<tr class="data" id=${elements[i].id} onclick="ShowFeature(this)">
+        let distance = convertDistance(elements[i].distance)
+        tableBody.innerHTML += `<tr class="data" id=${elements[i].id} onclick="showFeature(this)">
                                     <td>${i}</td>
                                     <td>${elements[i].name}</td>
                                     <td>${elements[i].station}</td>
@@ -482,7 +482,7 @@ function createPositionFeature(){
   }
   
 
-function ShowFeature(element){ 
+function showFeature(element){ 
     let lampTrs = tableBody.querySelectorAll('tr.data')
     let id = Number(element.getAttribute('id'))
     let idClicked = byClass('data clicked')[0].getAttribute('id')
@@ -503,7 +503,7 @@ function ShowFeature(element){
     }
 }
 
-  function ConvertDistance(dist){ 
+  function convertDistance(dist){ 
     let output = 0
     if (!dist || typeof(dist) !== 'number'){ 
             throw new Error('Need a valid distance')
