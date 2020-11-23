@@ -223,7 +223,7 @@ function createLampTable(data){
         tableBody.appendChild(newRow)
     }else{
         let h5 = byId('generales-information').getElementsByTagName('h5')[0]
-        let hours =   addZero(new Date(data.created_At).getHours())
+        let hours =   addZero(new Date(data.created_At).getHours() + 2)
         let minutes = addZero(new Date(data.created_At).getMinutes())
         h5.innerHTML = 'Derniere Maintenance:  ' + new Date(data.created_At).toLocaleDateString() + '   à  ' + hours + 'h' + minutes
         let difference = data.number_off_lamp_On - data.number_off_lamp_Off
