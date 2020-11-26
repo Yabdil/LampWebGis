@@ -55,7 +55,6 @@ class NerestLamp(APIView):
 def transformDistanceValueToFloat(value):
     distance = str(value)
     return float(distance.split(' ')[0]) # we dont need the m meter 
-
-
+ 
 def openApp(request):
     return render(request, 'mainPage1.html')

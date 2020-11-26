@@ -184,11 +184,11 @@ map.on('click', function(e) {
         }
     })
 })
-let BaseModal =  byId('base')
+let baseModal =  byId('base')
 let showBaseModal = document.getElementById('display-base')
 showBaseModal.addEventListener('click',function(){ 
-    BaseModal.style.transition = "all 2s"
-    BaseModal.style.display = "block"
+    baseModal.style.transition = "all 2s"
+    baseModal.style.display = "block"
 })
 
 
@@ -334,14 +334,13 @@ showForm.addEventListener('click', function(){
 })
 function submitForm(e){ 
     e.preventDefault()
-    let number_off = Number(byId('numberOff').value)
-    let number_on = Number(byId('numberOn').value)
+    let numberOfLampsOff = Number(byId('numberOff').value)
+    let numberOfLampsOn = Number(byId('numberOn').value)
     let comment = byId('comment').value
- 
     let total = number_off + number_on
-    let newLampHistoric = { 
-        number_off_lamp_Off: number_off,
-        number_off_lamp_On: number_on,
+    let newLampMaintenance = { 
+        number_off_lamp_Off: numberOfLampsOff,
+        number_off_lamp_On: numberOfLampsOn,
         total: total,
         comment: comment,
         lamp: selectionedElement.id,
@@ -351,7 +350,7 @@ function submitForm(e){
     let headers = new Headers();
     headers.append('X-CSRFToken', csrftoken)
     headers.append("Content-Type", "application/json")
-    fetch(`lamphistorique/${selectionedElement.id}`,{method:'POST',body: JSON.stringify(newLampHistoric),headers:headers})
+    fetch(`lamphistorique/${selectionedElement.id}`,{method:'POST',body: JSON.stringify(newLampMaintenance),headers:headers})
             .then(res => res.json())
                 .then(function(data){ 
                     if (data.non_field_errors){ 
@@ -380,20 +379,20 @@ closeForm.addEventListener('click', function(e){
 let geolocation = new ol.Geolocation({ 
     projection: map.getView().getProjection()
 })
-let activeGeolocation = byId('location')
+let activateGeolocation = byId('location')
 let positions = ol.proj.transform([43.106,11.594],'EPSG:4326','EPSG:3857')
 let vectorPosition = new ol.layer.Vector()
-let tableNearest = byId('nearest-lamps')
-activeGeolocation.addEventListener('click',function(){ 
-    if (!activeGeolocation.getAttribute('class').includes('actual')){
+let nearestLampsContainer = byId('nearest-lamps')
+activateGeolocation.addEventListener('click',function(){ 
+    if (!activateGeolocation.getAttribute('class').includes('actual')){
         geolocation.setTracking(true)
         geolocation.on('change:position', function(evt){ 
         geolocation.setTracking(false) // we will diseable the tracking 
        let accuracy = geolocation.getAccuracy()
        if (accuracy < 17000){ 
             //positions = geolocation.getPosition()
-            createPositionFeature()
-            activeGeolocation.setAttribute('class', 'control location actual')
+            createGeolocationFeature()
+            activateGeolocation.setAttribute('class', 'control location actual')
             showNearestLamps()  
         }else{  // case where the accuracy is low, we will just center the map, but not show the marker
             //positions = geolocation.getPosition()
@@ -411,11 +410,11 @@ function showNearestLamps() {
         .then(function(res){ 
             return res.json()
         }).then(function(data){ 
-            nearestLampTable(JSON.parse(data))
+            putOnTableNearestLamps(JSON.parse(data))
          })
   }
 
-function createPositionFeature(){ 
+function createGeolocationFeature(){ 
     let positionFeature = new ol.Feature();
     positionFeature.setStyle(
       new ol.style.Style({
@@ -444,7 +443,7 @@ function createPositionFeature(){
     map.getView().setZoom(17)  
   }
   let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
-  function nearestLampTable(elements){ 
+  function putOnTableNearestLamps(elements){ 
       let i = 0
       for (i; i < elements.length; i++){ 
         let distance = convertDistance(elements[i].distance)
@@ -460,7 +459,7 @@ function createPositionFeature(){
       firstTr.setAttribute('class', 'data clicked')
       let features = lampsSource.getFeatures()
       resetStyle()
-      tableNearest.style.display = 'block'
+      nearestLampsContainer.style.display = 'block'
       let ids = []
       for (let element of elements){ 
             ids.push(Number(element.id))
@@ -517,7 +516,7 @@ function showFeature(element){
   }
  
 
-  function getCookie(name) { // Source of this function : the django documentation
+  function getCookie(name) { // Source of this function : django documentation
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -602,7 +601,7 @@ for (let closeDiv of closeDivs){
                 feature.setStyle(styleElement)
                 featureClicked = feature
                 clearTable()
-                activeGeolocation.setAttribute('class', 'control location')
+                activateGeolocation.setAttribute('class', 'control location')
                 parentDiv.style.display = 'none'
                 map.removeLayer(vectorPosition)
             })

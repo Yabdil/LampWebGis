@@ -600,6 +600,10 @@ h2{
 
 @media screen and (max-width: 800px) {
 
+    .header{ 
+        height: 5%;
+    }
+
     #nearest-lamps{ 
         width: 200px;
         font-size: 70%;
@@ -659,36 +663,46 @@ h2{
 
   @media screen and (max-width: 500px){ 
 
-      #base,.display-modal{ 
-          position: absolute;
-          top: 35%;
-      }
+    #base,.display-modal{ 
+        position: absolute;
+        top: 35%;
+    }
      
-      #base{
+    #base{
         height: 150px;
-      } 
+    } 
       
-      .header{ 
-          font-size: 60%;
-      }
+    .header{ 
+        height: 5%;
+        font-size: 75%;
+    }
 
-      .fond{ 
-          position: absolute;
-          bottom: 40px;
-      }
+    .header #logout{ 
+        font-size: 100%;
+    }
 
-      #position-mouse{ 
+    .fond{ 
+        position: absolute;
+        bottom: 40px;
+    }
+
+    #form-data{ 
+        position: absolute;
+        left: 8%;
+    }
+
+    #position-mouse{ 
           font-size: 10px;
           position: absolute;
           bottom: 1px;
-      }
+    }
 
-      #nearest-lamps{ 
+    #nearest-lamps{ 
         top: 8%;
         left: 40%;
-      }
+    }
 
-      #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
+    #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
         visibility: hidden;
     }
   }
@@ -701,6 +715,10 @@ h2{
 
     #rulerspan, #locationspan, #extendsspan, #zoomoutspan, #zoominspan{ 
         visibility: hidden;
+    }
+
+    .header{ 
+        height: 7%;
     }
 
   }
