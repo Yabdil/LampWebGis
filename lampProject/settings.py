@@ -27,7 +27,7 @@ with open('lampProject/env.json') as file:
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = key
 
-ENVIRONNEMENT = 'DEV'
+ENVIRONNEMENT = 'PREPROD'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
