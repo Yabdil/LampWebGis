@@ -1,22 +1,19 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Lamp, Lamp_historique
-from rest_framework import generics
-from .serializer import LampSerializer, Lamp_historiqueSerializer
+from .serializer import LampsSerializer, Lamp_historiqueSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import json
-import datetime
 
-class LampView(APIView):
+class LampsView(APIView):
     def get(self, request):
         queryset = Lamp.objects.all()
-        serializer = LampSerializer(queryset, many=True)
+        serializer = LampsSerializer(queryset, many=True)
         return Response(serializer.data, status=200)
 
     
     def post(self, request):
-        serializer = LampSerializer(data=request.data)
+        serializer = LampsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -39,9 +36,8 @@ class LampDetailsHistorique(APIView):
         
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
-from django.core import serializers
-
-class NerestLamp(APIView):
+import json
+class NerestLamps(APIView):
     def get(self, request):
         lat = request.query_params.get('lat')
         long = request.query_params.get('long')

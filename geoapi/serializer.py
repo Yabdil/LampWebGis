@@ -2,7 +2,7 @@ from  rest_framework_gis.serializers import GeoFeatureModelSerializer
 from .models import Lamp, Lamp_historique
 from rest_framework import serializers
 
-class LampSerializer(GeoFeatureModelSerializer):
+class LampsSerializer(GeoFeatureModelSerializer):
     diff = serializers.SerializerMethodField()
     def get_diff(self,obj): # This method's goal is to get the recent maintenance for each lamp
         LampDiff = 0

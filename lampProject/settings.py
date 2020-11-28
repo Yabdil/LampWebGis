@@ -11,32 +11,27 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# we will use the env.json file for the settings
-import json
-
-with open('lampProject/env.json') as file:
-    jsonFile = json.load(file)
-    DB_ENV = jsonFile['DB']
-    hosts = jsonFile['ALLOWED_HOSTS']
-    key = jsonFile['SECRET_KEY']
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = key
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-ENVIRONNEMENT = 'PREPROD'
+ENVIRONNEMENT = 'REC'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
     DEBUG = True
 else:
-    DEBUG = False #we will turn debug to false in a prod or preprod env
+    DEBUG = True #we will turn debug to false in a prod or other environments
 
 
-ALLOWED_HOSTS = hosts
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -97,40 +92,42 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 
-
 if ENVIRONNEMENT == 'DEV':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': DB_ENV ['DEV']['NAME'],
-            'USER': DB_ENV ['DEV']['USER'],
-            'PASSWORD': DB_ENV ['DEV']['PASSWORD'],
-            'HOST': DB_ENV ['DEV']['HOST'],
-            'PORT': DB_ENV ['DEV']['PORT'],
+            'NAME': os.getenv('NAME_For_Dev'),
+            'USER': os.getenv('USER_For_Dev'),
+            'PASSWORD': os.getenv('PASSWORD_For_Dev'),
+            'HOST': os.getenv('HOST_For_Dev'),
+            'PORT': os.getenv('PORT_For_Dev'),
         }
     }
-elif ENVIRONNEMENT == 'PREPROD':
+    
+elif ENVIRONNEMENT == 'REC':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': DB_ENV ['PREPROD']['NAME'],
-            'USER': DB_ENV ['PREPROD']['USER'],
-            'PASSWORD': DB_ENV ['PREPROD']['PASSWORD'],
-            'HOST': DB_ENV ['PREPROD']['HOST'],
-            'PORT': DB_ENV ['PREPROD']['PORT'],
+            'NAME': os.getenv('NAME_For_Rec'),
+            'USER': os.getenv('USER_For_Rec'),
+            'PASSWORD': os.getenv('PASSWORD_For_Rec'),
+            'HOST': os.getenv('HOST_For_Rec'),
+            'PORT': os.getenv('PORT_For_Rec'),
         }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': DB_ENV ['PROD']['NAME'],
-            'USER': DB_ENV ['PROD']['USER'],
-            'PASSWORD': DB_ENV ['PROD']['PASSWORD'],
-            'HOST': DB_ENV ['PROD']['HOST'],
-            'PORT': DB_ENV ['PROD']['PORT'],
+            'NAME': os.getenv('NAME_For_Prod'),
+            'USER': os.getenv('USER_For_Prod'),
+            'PASSWORD': os.getenv('PASSWORD_For_Prod'),
+            'HOST': os.getenv('HOST_For_Prod'),
+            'PORT': os.getenv('PORT_For_Prod'),
         }
     }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

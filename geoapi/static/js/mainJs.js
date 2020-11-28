@@ -225,7 +225,7 @@ function createLampTable(data){
         let h5 = byId('generales-information').getElementsByTagName('h5')[0]
         let hours =   addZero(new Date(data.created_At).getHours() + 2)
         let minutes = addZero(new Date(data.created_At).getMinutes())
-        h5.innerHTML = 'Derniere Maintenance:  ' + new Date(data.created_At).toLocaleDateString() + '   à  ' + hours + 'h' + minutes
+        h5.innerHTML = 'Derniere Maintenance: le ' + new Date(data.created_At).toLocaleDateString() + '   à  ' + hours + 'h' + minutes
         let difference = data.number_off_lamp_On - data.number_off_lamp_Off
         let services = getServices(data)
         newRow.setAttribute('id', selectionedElement.id)
@@ -337,7 +337,7 @@ function submitForm(e){
     let numberOfLampsOff = Number(byId('numberOff').value)
     let numberOfLampsOn = Number(byId('numberOn').value)
     let comment = byId('comment').value
-    let total = number_off + number_on
+    let total = numberOfLampsOff + numberOfLampsOn
     let newLampMaintenance = { 
         number_off_lamp_Off: numberOfLampsOff,
         number_off_lamp_On: numberOfLampsOn,
