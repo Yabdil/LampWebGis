@@ -71,6 +71,11 @@ const map = new ol.Map({
         projection: 'EPSG:3857',
         minZoom: 4,
         maxZoom: 20
+    }),
+    controls: ol.control.defaults({
+        zoom: false,
+        attribution: false,
+        rotate: false
     })
 });
 
@@ -533,11 +538,6 @@ function showFeature(element){
 }
 const csrftoken = getCookie('csrftoken');
 
-
-let controls = map.getControls().array_
-for (let control of controls){ 
-    map.removeControl(control)
-}
 
 let coordsCenter = ol.proj.transform([43.105059, 11.596976], 'EPSG:4326', 'EPSG:3857')
 let zooms = byClass('zoom')

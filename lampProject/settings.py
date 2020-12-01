@@ -21,13 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-ENVIRONNEMENT = 'REC'
+ENVIRONNEMENT = 'PROD'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONNEMENT == 'DEV':
     DEBUG = True
 else:
-    DEBUG = True #we will turn debug to false in a prod or other environments
+    DEBUG = False #we will turn debug to false in a prod or other environments
 
 
 ALLOWED_HOSTS = ['*']

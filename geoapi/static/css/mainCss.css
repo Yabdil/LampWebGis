@@ -578,17 +578,18 @@ h2{
 
 #Ol-OSM{ 
     position: absolute;
-    bottom: 4px;
-    right: 20px;
+    bottom: 1px;
+    right: 2px;
     background-color: #F9F8F4;
+    background-color: rgba(255, 255, 255, 0.7);
     /*border-radius: 3px 3px 0px 0px;*/
     font-size: 11px;
-    padding-right: 4px;
+    padding: 2px 3px;
+
 }
 
 #Ol-OSM a{ 
     text-decoration: none;
-    padding: 0px 2px;
     color: #0B223C;
 }
 
@@ -671,6 +672,18 @@ h2{
     #base{
         height: 150px;
     } 
+
+    #table-information-genrales{ 
+        font-size: 70%;
+    }
+
+    .lamps-information{ 
+        margin-right: 0.45px;
+    }
+
+    #close-lamps{ 
+        border-bottom: none;
+    }
       
     .header{ 
         height: 7%;
