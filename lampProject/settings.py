@@ -27,7 +27,7 @@ ENVIRONNEMENT = 'DEV'
 if ENVIRONNEMENT == 'DEV':
     DEBUG = True
 else:
-    DEBUG = False #we will turn debug to false in a prod or other environments
+    DEBUG = True #we will turn debug to false in a prod or other environments
 
 
 ALLOWED_HOSTS = ['*']
