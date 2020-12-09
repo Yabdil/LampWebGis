@@ -16,7 +16,7 @@ class LampsSerializer(GeoFeatureModelSerializer):
         fields = '__all__'
 
 
-class Lamp_historiqueSerializer(serializers.ModelSerializer):
+class Lamp_Maintenances_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Lamp_historique
         fields = '__all__'

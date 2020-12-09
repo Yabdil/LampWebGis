@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Lamp, Lamp_historique
-from .serializer import LampsSerializer, Lamp_historiqueSerializer
+from .serializer import LampsSerializer, Lamp_Maintenances_Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -24,11 +24,11 @@ class LampDetailsHistorique(APIView):
         queryset = Lamp_historique.objects.filter(lamp__id=pk).order_by('-created_At')
         if len(queryset) > 4:
             queryset = queryset[0:4]
-        serializer = Lamp_historiqueSerializer(queryset, many=True)
+        serializer = Lamp_Maintenances_Serializer(queryset, many=True)
         return Response(serializer.data, status=200)
 
     def post(self, request, pk):
-        serializer = Lamp_historiqueSerializer(data=request.data)
+        serializer = Lamp_Maintenances_Serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -43,8 +43,8 @@ from rest_framework.decorators import api_view
 def nearestLamps(request):
     lat = request.query_params.get('lat')
     long = request.query_params.get('long')
-    pnt = Point(float(long), float(lat), srid=4326)
-    querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id','name','station','distance')[0:3]
+    point = Point(float(long), float(lat), srid=4326) # we need to use the 4325 srid in order to create the point
+    querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',point)).order_by('distance').values('id','name','station','distance')[0:3]
     data = []
     for queryset in querysets:
         data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToFloat(queryset['distance'])})
