@@ -19,7 +19,7 @@ let OSMTile = new ol.layer.Tile({
 
 let lampsSource = new ol.source.Vector({ 
     url : 'getGeojson',
-    format: new ol.format.GeoJSON(),
+    format: new ol.format.GeoJSON()
 })
 function lampStyle(feature,resolution) {
     let diff = feature.get('diff')
@@ -95,7 +95,7 @@ for (let baseMap of baseMaps){
     baseMap.addEventListener('click', function(){  
         if (!baseMap.getAttribute('class').includes('active')){
             removeAttributeActive() 
-            baseMap.setAttribute('class', 'fond active')
+            baseMap.classList.add('active')
             let mapTile = baseMap.getAttribute('id')
             switch(mapTile){
                 case 'OSM':
@@ -116,7 +116,7 @@ for (let baseMap of baseMaps){
 function removeAttributeActive(){ 
     for (let base of baseMaps){ 
         if (base.getAttribute('class').includes('active')){
-            base.setAttribute('class', 'fond')
+            base.classList.remove('active')
         }
     }
 }
@@ -160,7 +160,7 @@ map.on('click', function(e) {
                     }
                     for (let trElement of trElements){ 
                         if (Number(trElement.getAttribute('id')) === id){ 
-                            trElement.setAttribute('class', 'data clicked')
+                            trElement.classList.add('clicked')
                         }
                     }
                     featureClicked.setStyle(styleElement)
@@ -205,12 +205,12 @@ function fetchLamps(){
     })
     .then(function(data){  
         dataLamps = data
-        createLampTable(data[0]) // As our data are ordered by datetime we want to show up the recent data
-        createLampGraphic()
+        createInformationTable(data[0]) // As our data are ordered by datetime we want to show up the recent data
+        createGraphic()
     })
 }
 
-function createLampTable(data){
+function createInformationTable(data){
     let tableBody = byId('table-information-genrales').getElementsByTagName('tbody')[0]
     let newRow = document.createElement('tr')
     if (!data){ 
@@ -283,7 +283,7 @@ function addZero(element){
 }
 let showBy = byId('selected')
 
-function createLampGraphic(){ 
+function createGraphic(){ 
     let data = []
     let labels = []
     let elements = dataLamps
@@ -291,8 +291,9 @@ function createLampGraphic(){
         labels.unshift(new Date(element.created_At).toLocaleDateString())
         if (showBy.value === 'number_off_lamp_On'){ 
             data.unshift(element.number_off_lamp_On)
+        }else{ 
+            data.unshift(element.number_off_lamp_Off)
         }
-        data.unshift(element.number_off_lamp_Off)
     }
     byId('myChart').remove() // will remove the others chart instances
     let chartCanvas = document.createElement('canvas')
@@ -321,7 +322,7 @@ function createLampGraphic(){
 }
 
 showBy.addEventListener('change',function(){ 
-    createLampGraphic()
+    createGraphic()
 })
 
 let showForm = byClass('fa-edit')[0]
@@ -358,7 +359,7 @@ function submitForm(e){
     fetch(`lamphistorique/${selectionedElement.id}`,{method:'POST',body: JSON.stringify(newLampMaintenance),headers:headers})
             .then(res => res.json())
                 .then(function(data){ 
-                    if (data.non_field_errors){ 
+                    if (data.non_field_errors){ // case the server sends us a error 
                         msgError.innerHTML = data.non_field_errors
                         msgError.style.display = 'block'
                         setTimeout(function(){ 
@@ -385,7 +386,7 @@ let geolocation = new ol.Geolocation({
     projection: map.getView().getProjection()
 })
 let activateGeolocation = byId('location')
-let positions = ol.proj.transform([43.106,11.594],'EPSG:4326','EPSG:3857')
+let positions = null
 let vectorPosition = new ol.layer.Vector()
 let nearestLampsContainer = byId('nearest-lamps')
 activateGeolocation.addEventListener('click',function(){ 
@@ -395,12 +396,12 @@ activateGeolocation.addEventListener('click',function(){
         geolocation.setTracking(false) // we will diseable the tracking 
        let accuracy = geolocation.getAccuracy()
        if (accuracy < 17000){ 
-            //positions = geolocation.getPosition()
-            createGeolocationFeature()
-            activateGeolocation.setAttribute('class', 'control location actual')
+            positions = geolocation.getPosition()
+            createGeolocationGeometry()
+            activateGeolocation.classList.add('actual')
             showNearestLamps()  
         }else{  // case where the accuracy is low, we will just center the map, but not show the marker
-            //positions = geolocation.getPosition()
+            positions = geolocation.getPosition()
             map.getView().setCenter(positions)
             map.getView().setZoom(15)
         }  
@@ -419,7 +420,7 @@ function showNearestLamps() {
          })
   }
 
-function createGeolocationFeature(){ 
+function createGeolocationGeometry(){ 
     let positionFeature = new ol.Feature();
     positionFeature.setStyle(
       new ol.style.Style({
@@ -436,7 +437,6 @@ function createGeolocationFeature(){
       })
     );
     positionFeature.setGeometry(new ol.geom.Point(positions))
-    //positionFeature.setGeometry(new ol.geom.Point(ol.proj.transform(positions,'EPSG:4326','EPSG:3857')))
     let sourceFeaturePosition = new ol.source.Vector({ 
         format: new ol.format.GeoJSON(),
         features: [positionFeature]
@@ -447,6 +447,7 @@ function createGeolocationFeature(){
     map.getView().setCenter(positions)
     map.getView().setZoom(17)  
   }
+  
   let tableBody = byId('lamps-table').getElementsByTagName('tbody')[0]
   function putOnTableNearestLamps(elements){ 
       let i = 0
@@ -461,7 +462,7 @@ function createGeolocationFeature(){
       }
       /* the first tr element will receive a class attribute data clicked in order to style it differently */
       let firstTr = tableBody.getElementsByTagName('tr')[1]
-      firstTr.setAttribute('class', 'data clicked')
+      firstTr.classList.add('clicked')
       let features = lampsSource.getFeatures()
       resetStyle()
       nearestLampsContainer.style.display = 'block'
@@ -492,9 +493,9 @@ function showFeature(element){
     let idClicked = byClass('data clicked')[0].getAttribute('id')
     if (id !== Number(idClicked)){ 
         for (let lampTr of lampTrs){ 
-            lampTr.setAttribute('class', 'data')
+            lampTr.classList.remove('clicked')
         }
-        element.setAttribute('class', 'data clicked') // we will give the tr element that receive the click another class attri
+        element.classList.add('clicked') // we will give the tr element that receive the click another class attri
         let features = lampsSource.getFeatures()
         let featureToShow = features.find(feature => feature.id_ === id)
         featureClicked = featureToShow
@@ -601,7 +602,7 @@ for (let closeDiv of closeDivs){
                 feature.setStyle(styleElement)
                 featureClicked = feature
                 clearTable()
-                activateGeolocation.setAttribute('class', 'control location')
+                activateGeolocation.classList.remove('actual')
                 parentDiv.style.display = 'none'
                 map.removeLayer(vectorPosition)
             })

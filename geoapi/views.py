@@ -37,16 +37,19 @@ class LampDetailsHistorique(APIView):
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 import json
-class NerestLamps(APIView):
-    def get(self, request):
-        lat = request.query_params.get('lat')
-        long = request.query_params.get('long')
-        pnt = Point(float(long), float(lat), srid=4326)
-        querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id','name','station','distance')[0:3]
-        data = []
-        for queryset in querysets:
-            data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToFloat(queryset['distance'])})
-        return Response(json.dumps(data), status=200)
+from rest_framework.decorators import api_view
+
+@api_view(['GET'])
+def nearestLamps(request):
+    lat = request.query_params.get('lat')
+    long = request.query_params.get('long')
+    pnt = Point(float(long), float(lat), srid=4326)
+    querysets = Lamp.objects.annotate(distance=Distance('coord_X_Y',pnt)).order_by('distance').values('id','name','station','distance')[0:3]
+    data = []
+    for queryset in querysets:
+        data.append({"id":queryset['id'], "name":queryset['name'], "station":queryset['station'],'distance':transformDistanceValueToFloat(queryset['distance'])})
+    return Response(json.dumps(data), status=200)
+
 
 def transformDistanceValueToFloat(value):
     distance = str(value)
