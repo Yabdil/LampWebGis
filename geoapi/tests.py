@@ -1,7 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase,Client
 from .models import Lamp_historique, Lamp
 from datetime import datetime
-#from django.contrib.gis.gdal import O
+
+
 class LampTest(TestCase):
     def setUp(self):
         lamp = Lamp.objects.create(name='LTY F', station='station1',coord_X_Y='POINT(-95.3385 29.7245)')
@@ -17,5 +18,7 @@ class LampTest(TestCase):
         lamphistorique1 = Lamp_historique.objects.all().order_by('-created_At').first()
         lastData = Lamp_historique.objects.all().order_by('created_At').latest().created_At
         self.assertEqual(lamphistorique1.created_At, lastData)
+
+
 
 

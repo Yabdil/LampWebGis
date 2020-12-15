@@ -495,7 +495,7 @@ function showFeature(element){
         for (let lampTr of lampTrs){ 
             lampTr.classList.remove('clicked')
         }
-        element.classList.add('clicked') // we will give the tr element that receive the click another class attri
+        element.classList.add('clicked') // we will give the tr element that receive the click another class attr
         let features = lampsSource.getFeatures()
         let featureToShow = features.find(feature => feature.id_ === id)
         featureClicked = featureToShow
@@ -511,7 +511,7 @@ function showFeature(element){
   function convertDistance(dist){ 
     let output = 0
     if (!dist || typeof(dist) !== 'number'){ 
-            throw new Error('Need a valid distance')
+        throw new Error('Need a valid distance')
     }
     if (dist > 1000){ 
         output = (dist / 1000).toFixed(2) + ' ' + 'km'
