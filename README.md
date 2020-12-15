@@ -6,7 +6,7 @@ DB: PostgreSQL and PostGis
 
 Backend: Django and Rest Framework
 
-Frontend: VanillaJS, Openlayers for the map and ChartJs for the chart  and HTML/CSS for the webapp
+Frontend: VanillaJS, Openlayers for the map and ChartJs for the chart  and HTML/CSS for the webapp 
 
 The features that offers the application are : 
 
